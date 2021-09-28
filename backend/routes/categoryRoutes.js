@@ -13,7 +13,7 @@ router.route('/').get(getCategory)
     .post(protect, admin, createCategory)
 
 router.route('/:id')
-    .get(protect, admin, getDetailCategory)
+    .get(getDetailCategory)
     .delete(protect, admin, deleteCategory)
     .put(protect, admin, updateCategory)
 

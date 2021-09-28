@@ -20,8 +20,8 @@ router.put('/disable/:id', disableUser)
 
 //GET res
 router.route('/profile')
-    .get(protect, getUserProfile)
-    .put(protect, updateUserProfile)
+    .get(getUserProfile)
+    .put(updateUserProfile)
 
 router.route('/:id').delete(protect, admin, deleteUser)
     .get(protect, admin, getUserById)
