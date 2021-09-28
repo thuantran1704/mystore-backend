@@ -1,4 +1,5 @@
 import express from 'express'
+import cors from 'cors'
 import dotenv from 'dotenv'
 import path from 'path'
 import colors from 'colors'
@@ -22,7 +23,7 @@ dotenv.config()
 connectDB()
 
 const app = express()
-
+app.use(cors())
 app.use(express.json())
 app.use(fileUpload({
     useTempFiles: true
