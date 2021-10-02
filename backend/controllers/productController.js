@@ -8,8 +8,8 @@ import Brand from '../models/brandModel.js'
 // @route       GET /api/products
 // @access      Public
 const getProducts = asyncHandler(async (req, res) => {
-    const pageSize = 8
-    const page = Number(req.query.pageNumber) || 1
+    // const pageSize = 8
+    // const page = Number(req.query.pageNumber) || 1
 
     const keyword = req.query.keyword ? {
         name: {
@@ -17,13 +17,10 @@ const getProducts = asyncHandler(async (req, res) => {
             $options: 'i'
         }
     } : {}
-
-    const count = await Product.countDocuments({ ...keyword })
-
-    const products = await Product.find({ ...keyword }).sort(-'brand').sort('-createdAt').limit(pageSize)
-        .skip(pageSize * (page - 1))
-
-    res.json({ products, page, pages: Math.ceil(count / pageSize), count })
+    // const count = await Product.countDocuments({ ...keyword })
+    const products = await Product.find({ ...keyword }).sort(-'brand').sort('-createdAt')
+        
+    res.json(products)
 })
 
 // @desc        Fetch all products by brand
