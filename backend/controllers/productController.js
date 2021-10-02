@@ -181,11 +181,11 @@ const createProductReview = asyncHandler(async (req, res) => {
     }
 })
 
-// @desc    Get top rated products
+// @desc    Get top 6 rated products
 // @route   GET /api/products/top
 // @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find({}).sort({ rating: -1 }).limit(4)
+    const products = await Product.find({}).sort({ rating: -1 }).limit(6)
     res.json(products)
 })
 
