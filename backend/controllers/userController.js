@@ -9,6 +9,9 @@ import Role from '../models/roleModel.js'
 // @access      Public
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
+    
+    console.log("email from body : " + email);
+    console.log("password from body : " + password);
 
     const user = await User.findOne({ email })
     if (user && user.isDisable === true) {
@@ -20,9 +23,11 @@ const authUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            password : user.password,
             phone: user.phone,
-            userAddress: user.userAddress,
+            isDisable : user.isDisable,
             role: user.role,
+            userAddress: user.userAddress,
             token: generateToken(user._id),
         })
     } else {
