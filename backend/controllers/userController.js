@@ -2,6 +2,7 @@ import asyncHandler from 'express-async-handler'
 import generateToken from '../utills/generateToken.js'
 import User from '../models/userModel.js'
 import Role from '../models/roleModel.js'
+import Product from '../models/productModel.js'
 
 
 // @desc        Auth user & get token
@@ -9,9 +10,6 @@ import Role from '../models/roleModel.js'
 // @access      Public
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
-    
-    console.log("email from body : " + email);
-    console.log("password from body : " + password);
 
     const user = await User.findOne({ email })
     if (user && user.isDisable === true) {
@@ -23,9 +21,10 @@ const authUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
-            password : user.password,
+            password: user.password,
             phone: user.phone,
-            isDisable : user.isDisable,
+            cart: user.cart,
+            isDisable: user.isDisable,
             role: user.role,
             userAddress: user.userAddress,
             token: generateToken(user._id),
@@ -35,6 +34,91 @@ const authUser = asyncHandler(async (req, res) => {
         throw new Error('Invalid email or password')
     }
 })
+
+// @desc    Add item to user cart
+// @route   POST /api/users/cart/:id/add
+// @access  Private
+const addItemToUserCart = asyncHandler(async (req, res) => {
+    const qty = req.body.qty
+
+    const product = await Product.findById(req.params.id)
+
+    if (product) {
+        const alreadyAdded = req.user.cart.find(
+            (item) => item.product._id.toString() === product._id.toString()
+        )
+
+        if (!alreadyAdded) {
+            const item = {
+                name: product.name,
+                qty: qty,
+                image: product.images[0].url,
+                price: product.price,
+                product: product._id,
+            }
+            req.user.cart.push(item)
+            const addCart = await req.user.save()
+            res.status(201).json({ message: 'Add to cart Successfully', cart: addCart })
+        }
+        else {
+            req.user.cart.map(
+                (item) => {
+                    if (item.product.toString() === alreadyAdded.product.toString() && product.countInStock >= (item.qty + qty)) {
+                        item.qty += Number(qty)
+                    }
+                }
+            )
+            const updateCart = await req.user.save()
+            res.status(201).json({ message: 'Update to cart Successfully', cart: updateCart })
+        }
+
+    } else {
+        res.status(404)
+        throw new Error('Product not found')
+    }
+})
+
+// @desc    remove item in user cart
+// @route   PUT /api/users/cart/:id/remove
+// @access  Private
+const removeItemInUserCart = asyncHandler(async (req, res) => {
+    const producId = req.params.id
+
+    if (req.user.cart.length <= 0) {
+        res.status(404)
+        throw new Error('Your cart is empty')
+    }
+    const alreadyAdded = req.user.cart.find(
+        (item) => item.product._id.toString() === producId.toString()
+    )
+    if (alreadyAdded) {
+        req.user.cart = req.user.cart.filter(
+            (item) => item.product.toString() !== alreadyAdded.product.toString()
+        )
+        const cartRemoved = await req.user.save()
+        res.json({ message: 'Product removed from cart', cartRemoved: cartRemoved })
+    }
+    else {
+        res.json({ message: "Product not found" })
+    }
+}
+)
+
+// @desc        Get user cart
+// @route       GET /api/users/profile
+// @access      Private
+// const getUserCart = asyncHandler(async (req, res) => {
+//     const user = await User.findById(req.user._id)
+
+//     if (user) {
+//         res.json({
+//             cart: user.cart
+//         })
+//     } else {
+//         res.status(404)
+//         throw new Error('User not found ')
+//     }
+// })
 
 // @desc        Get user profile
 // @route       GET /api/users/profile
@@ -218,5 +302,7 @@ export {
     deleteUser,
     getUserById,
     updateUser,
-    disableUser
+    disableUser,
+    addItemToUserCart,
+    removeItemInUserCart
 }
