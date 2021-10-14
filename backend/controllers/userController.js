@@ -105,20 +105,20 @@ const removeItemInUserCart = asyncHandler(async (req, res) => {
 )
 
 // @desc        Get user cart
-// @route       GET /api/users/profile
+// @route       GET /api/users/cart
 // @access      Private
-// const getUserCart = asyncHandler(async (req, res) => {
-//     const user = await User.findById(req.user._id)
+const getUserCart = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id)
 
-//     if (user) {
-//         res.json({
-//             cart: user.cart
-//         })
-//     } else {
-//         res.status(404)
-//         throw new Error('User not found ')
-//     }
-// })
+    if (user) {
+        res.json(
+            user.cart
+        )
+    } else {
+        res.status(404)
+        throw new Error('User not found ')
+    }
+})
 
 // @desc        Get user profile
 // @route       GET /api/users/profile
@@ -304,5 +304,6 @@ export {
     updateUser,
     disableUser,
     addItemToUserCart,
-    removeItemInUserCart
+    removeItemInUserCart,
+    getUserCart
 }
