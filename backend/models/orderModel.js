@@ -11,7 +11,6 @@ const orderSchema = mongoose.Schema(
             {
                 name: { type: String, required: true },
                 qty: { type: Number, required: true },
-                size: { type: Number, required: true },
                 image: { type: String, required: true },
                 price: { type: Number, required: true },
                 product: {
@@ -62,6 +61,10 @@ const orderSchema = mongoose.Schema(
         },
         deliveredAt: {
             type: Date,
+        },
+        status : {
+            type : Int16Array,
+            default: 1,
         },
         isCancelled: {
             type: Boolean,

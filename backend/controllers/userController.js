@@ -40,7 +40,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @access  Private
 const addItemToUserCart = asyncHandler(async (req, res) => {
     const qty = req.body.qty
-
+    console.log("qty : " + qty);
     const product = await Product.findById(req.params.id)
 
     if (product) {
