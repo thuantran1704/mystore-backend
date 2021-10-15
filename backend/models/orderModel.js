@@ -63,7 +63,7 @@ const orderSchema = mongoose.Schema(
             type: Date,
         },
         status : {
-            type : Int16Array,
+            type : Number,
             default: 1,
         },
         isCancelled: {
