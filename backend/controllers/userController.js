@@ -57,8 +57,8 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
                 product: product._id,
             }
             req.user.cart.push(item)
-            const addCart = await req.user.save()
-            res.status(201).json({ message: 'Add to cart Successfully', cart: addCart })
+            await req.user.save()
+            res.status(201).json({ message: 'Add to cart Successfully' })
         }
         else {
             req.user.cart.map(
@@ -68,8 +68,8 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
                     }
                 }
             )
-            const updateCart = await req.user.save()
-            res.status(201).json({ message: 'Update to cart Successfully', cart: updateCart })
+            await req.user.save()
+            res.status(201).json({ message: 'Update to cart Successfully' })
         }
 
     } else {
