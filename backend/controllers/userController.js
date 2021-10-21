@@ -4,7 +4,6 @@ import User from '../models/userModel.js'
 import Role from '../models/roleModel.js'
 import Product from '../models/productModel.js'
 
-
 // @desc        Auth user & get token
 // @route       POST /api/users/login
 // @access      Public

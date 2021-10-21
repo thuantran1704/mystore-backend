@@ -67,6 +67,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     if (order) {
         order.isPaid = true
         order.paidAt = Date.now()
+        order.status = 2
         order.paymentResult = {
             id: req.body.id,
             status: req.body.status,
@@ -117,6 +118,7 @@ const updateOrderToDelivered = asyncHandler(async (req, res) => {
     if (order) {
         order.isDelivered = true
         order.deliveredAt = Date.now()
+        order.status = 3
 
         order.orderItems.forEach(async item => {
             await updateSold(item.product, item.qty)
@@ -137,6 +139,24 @@ async function updateSold(id, quantity) {
     await product.save({ validateBeforeSave: false })
 }
 
+// @desc        Update order to received
+// @route       GET /api/order/:id/deliver
+// @access      Private/Admin
+const updateOrderToReceived = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+
+    if (order) {
+        order.status = 4
+
+        const updateOrder = await order.save()
+        res.json(updateOrder)
+
+    } else {
+        res.status(404)
+        throw new Error('Order not found')
+    }
+})
+
 // @desc        Update order to cancelled
 // @route       GET /api/order/:id/cancel
 // @access      Private/User
@@ -151,6 +171,7 @@ const updateOrderToCancelled = asyncHandler(async (req, res) => {
         order.isPaid = false
         order.deliveredAt = Date.now()
         order.isCancelled = true
+        order.status = 0
 
         order.orderItems.forEach(async item => {
             await returnStock(item.product, item.qty)
@@ -180,5 +201,6 @@ export {
     updateOrderToDelivered,
     getMyOrders,
     getOrders,
-    updateOrderToCancelled
+    updateOrderToCancelled,
+    updateOrderToReceived
 }
