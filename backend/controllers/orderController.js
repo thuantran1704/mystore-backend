@@ -143,7 +143,7 @@ async function updateSold(id, quantity) {
 // @route       GET /api/order/:id/deliver
 // @access      Private/Admin
 const updateOrderToReceived = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id)
+    const order = await Order.findById(req.params.id).populate('user', 'name email')
 
     if (order) {
         order.status = 4
