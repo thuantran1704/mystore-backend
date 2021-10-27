@@ -4,7 +4,7 @@ import asyncHandler from 'express-async-handler'
 // @route       GET /api/love
 // @access      Public
 const iLoveU = asyncHandler(async (req, res) => {
-    const GiftForNhatPhung = "Thuận Trần said : \"💙 Anh thương Em nhiều nhắmmm áaa ! 💙\""
+    const GiftForNhatPhung = "Thuận Trần said : \\\"💙 Anh thương Em nhiều nhắmmm áaa ! 💙\""
     res.json(
         GiftForNhatPhung
     )
