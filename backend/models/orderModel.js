@@ -18,6 +18,7 @@ const orderSchema = mongoose.Schema(
                     required: true,
                     ref: 'Product',
                 },
+                isReviewed:{type: Boolean, default: false}
             },
         ],
         shippingAddress: {
