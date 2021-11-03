@@ -12,7 +12,8 @@ import {
     disableUser,
     addItemToUserCart,
     removeItemInUserCart,
-    getUserCart
+    getUserCart,
+    removeAllItemInUserCart
 } from '../controllers/userController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
@@ -32,6 +33,7 @@ router.route('/:id').delete(protect, admin, deleteUser)
 
 router.route('/cart/:id/add').post(protect, addItemToUserCart)
 router.route('/cart/:id/remove').delete(protect, removeItemInUserCart)
+router.route('/cart/remove').delete(protect, removeAllItemInUserCart)
 router.route('/cart/mycart').get(protect, getUserCart)
 
 

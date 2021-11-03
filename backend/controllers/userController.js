@@ -103,6 +103,21 @@ const removeItemInUserCart = asyncHandler(async (req, res) => {
 }
 )
 
+// @desc    remove item in user cart
+// @route   PUT /api/users/cart/:id/remove
+// @access  Private
+const removeAllItemInUserCart = asyncHandler(async (req, res) => {
+    if (req.user.cart.length <= 0) {
+        res.status(404)
+        throw new Error('Your cart is empty')
+    }
+    req.user.cart = []
+
+    await req.user.save()
+    res.json({ message: 'Product removed from cart' }).status(200)
+}
+)
+
 // @desc        Get user cart
 // @route       GET /api/users/cart
 // @access      Private
@@ -304,5 +319,6 @@ export {
     disableUser,
     addItemToUserCart,
     removeItemInUserCart,
-    getUserCart
+    getUserCart,
+    removeAllItemInUserCart
 }

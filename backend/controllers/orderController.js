@@ -30,7 +30,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
         order.orderItems.forEach(async item => {
             await updateStock(item.product, item.qty)
         })
-        
+
         const createdOrder = await order.save()
         res.status(201).json(createdOrder._id)
     }
@@ -39,7 +39,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
 async function updateStock(id, quantity) {
     const product = await Product.findById(id)
     product.countInStock = product.countInStock - quantity
-    
+
     await product.save({ validateBeforeSave: false })
 }
 
@@ -89,7 +89,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 // @access      Private
 const getMyOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find({ user: req.user._id }).sort('-createdAt')
-    .populate('user', 'name email')
+        .populate('user', 'name email')
 
     res.json(orders)
 })
@@ -103,11 +103,35 @@ const getOrders = asyncHandler(async (req, res) => {
 
     // const count = await Order.countDocuments()
     const orders = await Order.find({}).sort('-createdAt').populate('user', 'id name')
-        // .limit(pageSize)
-        // .skip(pageSize * (page - 1))
+    // .limit(pageSize)
+    // .skip(pageSize * (page - 1))
     // res.json({ orders, page, pages: Math.ceil(count / pageSize), count})
     res.json(orders)
 })
+
+// @desc        Update orderitem to reviewed
+// @route       GET /api/order/:id/review
+// @access      Private/Admin
+// const updateOrderItemToReviewed = asyncHandler(async (req, res) => {
+//     const order = await Order.findById(req.params.id).populate('user', 'name email')
+
+//     if (order) {
+//         const orderItem = Order.findOneAndUpdate({"order.orderItems"})
+//         if (orderItem) {
+//             orderItem.isReviewed = true;
+//             const updateOrder = await orderItem.save()
+//             res.json(updateOrder)
+//         }
+//         else {
+//             res.status(404)
+//             throw new Error('Order not found')
+//         }
+
+//     } else {
+//         res.status(404)
+//         throw new Error('Order not found')
+//     }
+// })
 
 // @desc        Update order to delivered
 // @route       GET /api/order/:id/deliver
@@ -158,13 +182,13 @@ const updateOrderToReceived = asyncHandler(async (req, res) => {
 })
 
 // @desc        Update order to cancelled
-// @route       GET /api/order/:id/cancel
+// @route       GET /api/orders/:id/cancel
 // @access      Private/User
 const updateOrderToCancelled = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id)
 
     if (order) {
-        if(order.isDelivered == true){
+        if (order.isDelivered == true) {
             res.status(404)
             throw new Error('Order is Delivered ! Can not Cancel ')
         }
@@ -202,5 +226,6 @@ export {
     getMyOrders,
     getOrders,
     updateOrderToCancelled,
-    updateOrderToReceived
+    updateOrderToReceived,
+    // updateOrderItemToReviewed
 }
