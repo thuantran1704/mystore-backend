@@ -223,6 +223,24 @@ const RegisterUser = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc        check email to register a new user
+// @route       POST /api/users/check
+// @access      Public
+const checkExistEmail = asyncHandler(async (req, res) => {
+    const email = req.body
+
+    const userExists = await User.findOne({ email })
+
+    if (userExists) {
+        res.status(400)
+        throw new Error('User already exists')
+    }
+    else {
+        res.status(200)
+        throw new Error('User can be used')
+    }
+})
+
 // @desc        Get all user
 // @route       GET /api/users
 // @access      Private/Admin
@@ -320,5 +338,6 @@ export {
     addItemToUserCart,
     removeItemInUserCart,
     getUserCart,
-    removeAllItemInUserCart
+    removeAllItemInUserCart,
+    checkExistEmail
 }
