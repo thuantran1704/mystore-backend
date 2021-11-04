@@ -145,9 +145,13 @@ const getUserProfile = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            password: user.password,
             phone: user.phone,
-            userAddress: user.userAddress,
+            cart: user.cart,
+            isDisable: user.isDisable,
             role: user.role,
+            userAddress: user.userAddress,
+            token: generateToken(user._id),
         })
     } else {
         res.status(404)
@@ -212,10 +216,13 @@ const RegisterUser = asyncHandler(async (req, res) => {
             _id: user._id,
             name: user.name,
             email: user.email,
+            password: user.password,
             phone: user.phone,
+            cart: user.cart,
+            isDisable: user.isDisable,
+            role: user.role,
             userAddress: user.userAddress,
-            role: user.role.name,
-            token: generateToken(user._id)
+            token: generateToken(user._id),
         })
     } else {
         res.status(400)
