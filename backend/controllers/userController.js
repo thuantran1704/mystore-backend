@@ -227,17 +227,17 @@ const RegisterUser = asyncHandler(async (req, res) => {
 // @route       POST /api/users/check
 // @access      Public
 const checkExistEmail = asyncHandler(async (req, res) => {
-    const { email } = req.body
+    const email = req.body
 
-    const userExists = await User.findOne({ email })
+    const userExists = await User.findOne(email)
 
     if (userExists) {
         res.status(400)
         throw new Error('User already exists')
     }
     else {
-        res.status(200)
-        throw new Error('User can be used')
+        res.status(200).json("User can be used")
+
     }
 })
 
