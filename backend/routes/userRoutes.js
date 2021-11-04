@@ -13,11 +13,13 @@ import {
     addItemToUserCart,
     removeItemInUserCart,
     getUserCart,
-    removeAllItemInUserCart
+    removeAllItemInUserCart,
+    checkExistEmail
 } from '../controllers/userController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
 router.route('/').post(RegisterUser).get(getUsers)
+router.route('/check').post(checkExistEmail)
 router.post('/login', authUser)
 
 router.put('/disable/:id', disableUser)
