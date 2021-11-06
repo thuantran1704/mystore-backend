@@ -11,7 +11,7 @@ router.route('/')
     .get(protect, admin, statisticProductSold)
 
 router.route('/orderbetween')
-    .get(protect, admin, statisticOrderBetween)
+    .post(protect, admin, statisticOrderBetween)
 
 router.route('/productbetween')
     .post(statisticProductBetween)
