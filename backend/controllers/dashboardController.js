@@ -13,8 +13,12 @@ const getInfoDashboard = asyncHandler(async (req, res) => {
     const userCount = await User.countDocuments()
     const orderCount = await Order.countDocuments()
     const receiptCount = await Receipt.countDocuments()
-
-    res.json([{ productCount: count }, { userCount: count }, { orderCount: count }, { receiptCount: count },])
+    const list = []
+    list.push(productCount)
+    list.push(userCount)
+    list.push(orderCount)
+    list.push(receiptCount)
+    res.json(list)
 })
 
 export {
