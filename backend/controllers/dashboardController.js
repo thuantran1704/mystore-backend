@@ -9,12 +9,28 @@ import Receipt from '../models/receiptModel.js'
 // @route       GET /api/dashboard
 // @access      Private/Admin
 const getInfoDashboard = asyncHandler(async (req, res) => {
-    const products = await Product.countDocuments()
-    const users = await User.countDocuments()
-    const orders = await Order.countDocuments()
-    const receipts = await Receipt.countDocuments()
+    const productCount = await Product.countDocuments()
+    const userCount = await User.countDocuments()
+    const orderCount = await Order.countDocuments()
+    const receiptCount = await Receipt.countDocuments()
+    const product = {
+        name : "Product",
+        count : productCount
+    }
+    const user = {
+        name : "User",
+        count : userCount
+    }
+    const order = {
+        name : "Order",
+        count : orderCount
+    }
+    const receipt = {
+        name : "Receipt",
+        count : receiptCount
+    }
   
-    res.json({ products,users,orders,receipts })
+    res.json({ product,user,order,receipt })
 })
 
 export {
