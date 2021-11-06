@@ -26,7 +26,7 @@ const addReceiptItems = asyncHandler(async (req, res) => {
             itemsPrice,
             shippingPrice,
             totalPrice,
-            orderAt : Date.now(),
+            orderAt: Date.now(),
         })
 
         const createdreceipt = await receipt.save()
@@ -52,14 +52,14 @@ const getReceiptById = asyncHandler(async (req, res) => {
 // @route       GET /api/receipts
 // @access      Private/Admin
 const getReceipts = asyncHandler(async (req, res) => {
-    const pageSize = 8
-    const page = Number(req.query.pageNumber) || 1
+    // const pageSize = 8
+    // const page = Number(req.query.pageNumber) || 1
 
-    const count = await Receipt.countDocuments()
+    // const count = await Receipt.countDocuments()
     const receipts = await Receipt.find({}).sort('-createdAt')
-        .limit(pageSize)
-        .skip(pageSize * (page - 1))
-    res.json({ receipts, page, pages: Math.ceil(count / pageSize), count })
+    // .limit(pageSize)
+    // .skip(pageSize * (page - 1))
+    res.json({ receipts })
 })
 
 // @desc        Update receipt to delivered

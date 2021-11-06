@@ -17,6 +17,7 @@ import categoryRoutes from './routes/categoryRoutes.js'
 import receiptRoutes from './routes/receiptRoutes.js'
 import uploadRoutes from './routes/uploadRoutes.js'
 import statisticRoutes from './routes/statisticRoutes.js'
+import dashboardRoutes from './routes/dashboardRoutes.js'
 import npRoutes from './routes/npRoutes.js'
 
 dotenv.config()
@@ -48,6 +49,7 @@ app.use('/api/brands', brandRoutes)
 app.use('/api/categories', categoryRoutes)
 app.use('/api/receipts', receiptRoutes)
 app.use('/api/statistic', statisticRoutes)
+app.use('/api/dashboard', dashboardRoutes)
 
 app.use('/api/iLoveU', npRoutes)
 
