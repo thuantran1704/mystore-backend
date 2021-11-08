@@ -3,7 +3,12 @@ import Product from '../models/productModel.js'
 import Category from '../models/categoryModel.js'
 import Brand from '../models/brandModel.js'
 
-
+class Obj {
+    constructor(name, _id) {
+        this._id = _id;
+        this.name = name;
+    }
+}
 // @desc        Fetch all products
 // @route       GET /api/products
 // @access      Public
@@ -77,9 +82,12 @@ const createProduct = asyncHandler(async (req, res) => {
     const { name, price, description, images, category, brand, countInStock } = req.body
     const findCate = await Category.find({ "name": category })
     const findBrand = await Brand.find({ "name": brand })
+    const obj = new Obj
+    obj.name = findCate.name
+    obj._id = findCate._id
 
     if (findCate && findBrand) {
-    throw new Error('category : ' + findCate + " == " + findCate._id + " brand : " + findBrand + " == " + findBrand._id)
+    throw new Error('category : ' + findCate + " == " + obj.name + " brand : " + findBrand + " == " + obj._id)
 
         const categoryObj = { name: findCate.name, category: findCate._id }
         const brandObj = { name: findBrand.name, brand: findBrand._id }
