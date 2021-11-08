@@ -79,6 +79,8 @@ const createProduct = asyncHandler(async (req, res) => {
     const findBrand = await Brand.find({ "name": brand })
 
     if (findCate && findBrand) {
+    throw new Error('category : ' + findCate + " == " + findCate._id + " brand : " + findBrand + " == " + findBrand._id)
+
         const categoryObj = { name: findCate.name, category: findCate._id }
         const brandObj = { name: findBrand.name, brand: findBrand._id }
         const product = await Product.create({
