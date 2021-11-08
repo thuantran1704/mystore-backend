@@ -82,17 +82,12 @@ const createProduct = asyncHandler(async (req, res) => {
     const { name, price, description, images, category, brand, countInStock } = req.body
     const findCate = await Category.find({ "name": category })
     const findBrand = await Brand.find({ "name": brand })
-    const obj = new Obj
-    obj.name = findCate.name
-    obj._id = findCate._id
 
     if (findCate && findBrand) {
-    throw new Error('category : ' + findCate + " == " + obj.name + " brand : " + findBrand + " == " + obj._id)
-
         const categoryObj = { name: findCate.name, category: findCate._id }
         const brandObj = { name: findBrand.name, brand: findBrand._id }
         const product = await Product.create({
-            name, price, description, images, category: categoryObj, brand: brandObj, countInStock
+            name, price, description, images, category: findCate, brand: findBrand, countInStock
         })
         res.status(201).json(product)
     }
