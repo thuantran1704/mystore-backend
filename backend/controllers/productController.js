@@ -19,7 +19,7 @@ const getProducts = asyncHandler(async (req, res) => {
     } : {}
     // const count = await Product.countDocuments({ ...keyword })
     const products = await Product.find({ ...keyword }).sort(-'brand').sort('-createdAt')
-        
+
     res.json(products)
 })
 
@@ -79,8 +79,8 @@ const createProduct = asyncHandler(async (req, res) => {
     const findCate = await Category.find({ "name": category })
     const findBrand = await Brand.find({ "name": brand })
 
-    const categoryObj = { name: findCate.name, category: category }
-    const brandObj = { name: findBrand.name, brand: brand }
+    const categoryObj = { name: findCate.name, category: findCate._id }
+    const brandObj = { name: findBrand.name, brand: findBrand._id }
 
     const product = await Product.create({
         name, price, description, images, category: categoryObj, brand: brandObj, countInStock
@@ -118,7 +118,7 @@ const updateProduct = asyncHandler(async (req, res) => {
         product.name = req.body.name || product.name
         product.price = req.body.price || product.price
         product.images = req.body.images || product.images
-        product.brand =  brandObj || product.brand
+        product.brand = brandObj || product.brand
         product.category = categoryObj || product.category
         product.countInStock = product.countInStock
         product.description = req.body.description || product.description
