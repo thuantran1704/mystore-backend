@@ -10,14 +10,14 @@ import {
 import { protect, admin } from '../middleware/authMiddleware.js'
 
 router.route('/')
-    .post(protect, admin, addReceiptItems)
-    .get(protect, admin, getReceipts)
+    .post(protect, addReceiptItems)
+    .get(protect, getReceipts)
 
 router.route('/:id')
-    .get(protect, admin, getReceiptById)
+    .get(protect, getReceiptById)
 
-router.route('/:id/cancel').put(protect, admin, updateReceiptToCancelled)
-router.route('/:id/receive').put(protect, admin, updateReceiptToReceived)
+router.route('/:id/cancel').put(protect, updateReceiptToCancelled)
+router.route('/:id/receive').put(protect, updateReceiptToReceived)
 
 
 export default router

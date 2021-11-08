@@ -10,11 +10,11 @@ import {
 import { protect, admin } from '../middleware/authMiddleware.js'
 
 router.route('/').get(getBrands)
-    .post(protect, admin, createBrand)
+    .post(protect, createBrand)
 
 router.route('/:id')
     .get(getDetailBrand)
-    .delete(protect, admin, deleteBrand)
-    .put(protect, admin, updateBrand)
+    .delete(protect, deleteBrand)
+    .put(protect, updateBrand)
 
 export default router

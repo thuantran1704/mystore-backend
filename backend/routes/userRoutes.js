@@ -29,9 +29,9 @@ router.route('/profile')
     .get(protect, getUserProfile)
     .put(protect, updateUserProfile)
 
-router.route('/:id').delete(protect, admin, deleteUser)
-    .get(protect, admin, getUserById)
-    .put(protect, admin, updateUser)
+router.route('/:id').delete(protect, deleteUser)
+    .get(protect, getUserById)
+    .put(protect, updateUser)
 
 router.route('/cart/:id/add').post(protect, addItemToUserCart)
 router.route('/cart/:id/remove').delete(protect, removeItemInUserCart)
