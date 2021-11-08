@@ -80,14 +80,19 @@ const getProductById = asyncHandler(async (req, res) => {
 // @access      Private/Admin
 const createProduct = asyncHandler(async (req, res) => {
     const { name, price, description, images, category, brand, countInStock } = req.body
-    const findCate = await Category.find({ "name": category })
+    const findCate = await Category.find({ "name": category }).z
     const findBrand = await Brand.find({ "name": brand })
+    const obj = new Obj
+    obj = findCate
+
 
     if (findCate && findBrand) {
+        throw new Error('obj._name : ' + obj.name + " obj._id : " + obj._id)
+
         const categoryObj = { name: findCate.name, category: findCate._id }
         const brandObj = { name: findBrand.name, brand: findBrand._id }
         const product = await Product.create({
-            name, price, description, images, category: findCate, brand: findBrand, countInStock
+            name, price, description, images, category: categoryObj, brand: brandObj, countInStock
         })
         res.status(201).json(product)
     }
