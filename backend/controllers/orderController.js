@@ -109,6 +109,14 @@ const getOrders = asyncHandler(async (req, res) => {
     res.json(orders)
 })
 
+// @desc        Get all orders by status
+// @route       GET /api/orders/status
+// @access      Private/Admin
+const getOrdersByStatus = asyncHandler(async (req, res) => {
+    const orders = await Order.find({"status" : req.params.status}).sort('-createdAt').populate('user', 'name email')
+    res.json(orders)
+})
+
 // @desc        Update orderitem to reviewed
 // @route       GET /api/order/:id/review
 // @access      Private/Admin
@@ -227,5 +235,6 @@ export {
     getOrders,
     updateOrderToCancelled,
     updateOrderToReceived,
+    getOrdersByStatus
     // updateOrderItemToReviewed
 }
