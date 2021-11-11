@@ -12,11 +12,15 @@ const addOrderItems = asyncHandler(async (req, res) => {
         paymentMethod, itemsPrice,
         taxPrice, shippingPrice,
         totalPrice } = req.body
-
+        var status = 1
     if (orderItems && orderItems.length == 0) {
         res.status(400)
         throw new Error('No order item')
     } else {
+        if(paymentMethod ==="ShipCOD"){
+            status = 2
+        }
+      
         const order = new Order({
             orderItems,
             user: req.user._id,
@@ -25,7 +29,8 @@ const addOrderItems = asyncHandler(async (req, res) => {
             itemsPrice,
             taxPrice,
             shippingPrice,
-            totalPrice
+            totalPrice,
+            status
         })
         order.orderItems.forEach(async item => {
             await updateStock(item.product, item.qty)
