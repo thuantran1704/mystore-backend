@@ -308,6 +308,23 @@ const disableUser = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc        ENABLE user
+// @route       ENABLE /api/users/:id
+// @access      Private/Admin
+const enableUser = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.params.id)
+    if (user) {
+        user.isDisable = false
+        await user.save()
+
+        res.json({ message: 'User enable' })
+    }
+    else {
+        res.status(404)
+        throw new Error('User not found')
+    }
+})
+
 // @desc        Get user by id
 // @route       GET /api/users/:id
 // @access      Private/Admin
@@ -358,6 +375,7 @@ export {
     getUserById,
     updateUser,
     disableUser,
+    enableUser,
     addItemToUserCart,
     removeItemInUserCart,
     getUserCart,
