@@ -268,6 +268,14 @@ const getUsers = asyncHandler(async (req, res) => {
     res.json(users)
 })
 
+// @desc        Get all user by isDisable
+// @route       GET /api/users
+// @access      Private/Admin
+const getUsersByIsDisable = asyncHandler(async (req, res) => {
+    const users = await User.find({"isDisable" : req.body.isDisable}).sort('-createdAt')
+    res.json(users)
+})
+
 // @desc        Delete user
 // @route       DELETE /api/users/:id
 // @access      Private/Admin
@@ -345,6 +353,7 @@ export {
     RegisterUser,
     updateUserProfile,
     getUsers,
+    getUsersByIsDisable,
     deleteUser,
     getUserById,
     updateUser,
