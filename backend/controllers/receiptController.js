@@ -34,6 +34,14 @@ const addReceiptItems = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc        Get all receipts by status
+// @route       GET /api/receipts/status/:status
+// @access      Private/Admin
+const getReceiptsByStatus = asyncHandler(async (req, res) => {
+    const receipts = await Receipt.find({"status" : req.params.status}).sort('-createdAt')
+    res.json(receipts)
+})
+
 // @desc        Get receipt by ID
 // @route       GET /api/receipts/:id
 // @access      Private/Admin
@@ -120,5 +128,6 @@ export {
     getReceipts,
     updateReceiptToReceived,
     updateReceiptToCancelled,
-    getReceiptById
+    getReceiptById,
+    getReceiptsByStatus
 }
