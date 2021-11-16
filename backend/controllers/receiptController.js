@@ -59,7 +59,7 @@ const getReceipts = asyncHandler(async (req, res) => {
     const receipts = await Receipt.find({}).sort('-createdAt')
     // .limit(pageSize)
     // .skip(pageSize * (page - 1))
-    res.json({ receipts })
+    res.json(receipts)
 })
 
 // @desc        Update receipt to delivered
