@@ -39,9 +39,9 @@ const authUser = asyncHandler(async (req, res) => {
 // @access  Private
 const addItemToUserCart = asyncHandler(async (req, res) => {
     const qty = req.body.qty
-    console.log("qty : " + qty);
+    const price = req.body.price
     const product = await Product.findById(req.params.id)
-
+    console.log("price : "+ price);
     if (product) {
         const alreadyAdded = req.user.cart.find(
             (item) => item.product._id.toString() === product._id.toString()
@@ -52,7 +52,7 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
                 name: product.name,
                 qty: qty,
                 image: product.images[0].url,
-                price: product.price,
+                price: price ? price : product.price,
                 product: product._id,
             }
             req.user.cart.push(item)
@@ -64,6 +64,7 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
                 (item) => {
                     if (item.product.toString() === alreadyAdded.product.toString() && product.countInStock >= (item.qty + qty)) {
                         item.qty += Number(qty)
+                        if(price)  item.price = price 
                     }
                 }
             )
