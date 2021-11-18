@@ -27,6 +27,7 @@ const addReceiptItems = asyncHandler(async (req, res) => {
             shippingPrice,
             totalPrice,
             orderAt: Date.now(),
+            receiveAt: Date.now(),
         })
 
         const createdreceipt = await receipt.save()
