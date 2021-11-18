@@ -30,7 +30,7 @@ const addReceiptItems = asyncHandler(async (req, res) => {
         })
 
         const createdreceipt = await receipt.save()
-        res.status(201).json(createdreceipt)
+        res.status(201).json(createdreceipt._id)
     }
 })
 

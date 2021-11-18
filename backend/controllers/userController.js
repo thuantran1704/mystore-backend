@@ -41,7 +41,7 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
     const qty = req.body.qty
     const price = req.body.price
     const product = await Product.findById(req.params.id)
-    console.log("price : "+ price);
+
     if (product) {
         const alreadyAdded = req.user.cart.find(
             (item) => item.product._id.toString() === product._id.toString()
