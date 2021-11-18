@@ -38,7 +38,7 @@ const addReceiptItems = asyncHandler(async (req, res) => {
 // @route       GET /api/receipts/status/:status
 // @access      Private/Admin
 const getReceiptsByStatus = asyncHandler(async (req, res) => {
-    const receipts = await Receipt.find({"status" : req.params.status}).sort('-createdAt')
+    const receipts = await Receipt.find({"status" : req.params.status}).sort('-createdAt').populate('user', 'name email')
     res.json(receipts)
 })
 
@@ -46,7 +46,7 @@ const getReceiptsByStatus = asyncHandler(async (req, res) => {
 // @route       GET /api/receipts/:id
 // @access      Private/Admin
 const getReceiptById = asyncHandler(async (req, res) => {
-    const receipt = await Receipt.findById(req.params.id)
+    const receipt = await Receipt.findById(req.params.id).populate('user', 'name email')
 
     if (receipt) {
         res.json(receipt)
@@ -64,7 +64,7 @@ const getReceipts = asyncHandler(async (req, res) => {
     // const page = Number(req.query.pageNumber) || 1
 
     // const count = await Receipt.countDocuments()
-    const receipts = await Receipt.find({}).sort('-createdAt')
+    const receipts = await Receipt.find({}).sort('-createdAt').populate('user', 'name email')
     // .limit(pageSize)
     // .skip(pageSize * (page - 1))
     res.json(receipts)
