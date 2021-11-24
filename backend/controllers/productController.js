@@ -27,34 +27,33 @@ const getProducts = asyncHandler(async (req, res) => {
 // @route       GET /api/products
 // @access      Public
 const getProductsByBrand = asyncHandler(async (req, res) => {
-    const pageSize = 8
-    const page = Number(req.query.pageNumber) || 1
+    // const pageSize = 8
+    // const page = Number(req.query.pageNumber) || 1
+    // const input = req.params.brand
+    // const productsSize = await Product.find({ "brand.name": input })
+    // const count = productsSize.length
 
-    const input = req.params.brand
-
-    const productsSize = await Product.find({ "brand.name": input })
-    const count = productsSize.length
-
-    const products = await Product.find({ "brand.name": input }).sort('-createdAt').limit(pageSize)
-        .skip(pageSize * (page - 1))
-
-    res.json({ products, page, pages: Math.ceil(count / pageSize) })
+    const products = await Product.find({ "brand.name": input }).sort('-createdAt')
+    // .limit(pageSize).skip(pageSize * (page - 1))
+    // res.json({ products, page, pages: Math.ceil(count / pageSize) })
+    res.json(products)
 })
 
 // @desc        Fetch all products by category
 // @route       GET /api/products
 // @access      Public
 const getProductsByCategory = asyncHandler(async (req, res) => {
-    const pageSize = 8
-    const page = Number(req.query.pageNumber) || 1
-    const input = req.params.category
+    // const pageSize = 8
+    // const page = Number(req.query.pageNumber) || 1
+    // const input = req.params.category
 
-    const productsSize = await Product.find({ "category.name": input })
-    const count = productsSize.length
+    // const productsSize = await Product.find({ "category.name": input })
+    // const count = productsSize.length
 
     const products = await Product.find({ "category.name": input }).sort('-createdAt').limit(pageSize)
+    res.json(products)
 
-    res.json({ products, page, pages: Math.ceil(count / pageSize) })
+    // res.json({ products, page, pages: Math.ceil(count / pageSize) })
 })
 
 // @desc        Fetch single products
