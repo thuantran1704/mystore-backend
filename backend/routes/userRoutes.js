@@ -17,7 +17,8 @@ import {
     checkExistEmail,
     getUsersByIsDisable, 
     enableUser,
-    addVoucherToUserVoucher
+    addVoucherToUserVoucher,
+    removeVoucherInUserVoucher
 } from '../controllers/userController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
@@ -45,6 +46,7 @@ router.route('/cart/remove').delete(protect, removeAllItemInUserCart)
 router.route('/cart/mycart').get(protect, getUserCart)
 
 router.route('/voucher/add').post(protect, addVoucherToUserVoucher)
+router.route('/voucher/:id/remove').delete(protect, removeVoucherInUserVoucher)
 
 
 export default router

@@ -129,6 +129,32 @@ const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc    remove voucher in user voucher
+// @route   PUT /api/users/voucher/:id/remove
+// @access  Private
+const removeVoucherInUserVoucher = asyncHandler(async (req, res) => {
+    const voucherId = req.params.id
+
+    if (req.user.voucher.length <= 0) {
+        res.status(404)
+        throw new Error('Your List Voucher is empty')
+    }
+    const alreadyAdded = req.user.voucher.find(
+        (item) => item.voucherId._id.toString() === voucherId.toString()
+    )
+    if (alreadyAdded) {
+        req.user.voucher = req.user.voucher.filter(
+            (item) => item.voucherId.toString() !== alreadyAdded.voucherId.toString()
+        )
+        const voucherRemoved = await req.user.save()
+        res.json({ message: 'Voucher removed from list', voucherRemoved: voucherRemoved })
+    }
+    else {
+        res.json({ message: "Voucher not found" })
+    }
+}
+)
+
 
 // @desc    remove item in user cart
 // @route   PUT /api/users/cart/:id/remove
@@ -408,5 +434,6 @@ export {
     getUserCart,
     removeAllItemInUserCart,
     checkExistEmail,
-    addVoucherToUserVoucher
+    addVoucherToUserVoucher,
+    removeVoucherInUserVoucher
 }
