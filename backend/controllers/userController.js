@@ -3,6 +3,7 @@ import generateToken from '../utills/generateToken.js'
 import User from '../models/userModel.js'
 import Role from '../models/roleModel.js'
 import Product from '../models/productModel.js'
+import Voucher from '../models/voucherModel.js'
 
 // @desc        Auth user & get token
 // @route       POST /api/users/login
@@ -23,6 +24,7 @@ const authUser = asyncHandler(async (req, res) => {
             password: user.password,
             phone: user.phone,
             cart: user.cart,
+            voucher: user.voucher,
             isDisable: user.isDisable,
             role: user.role,
             userAddress: user.userAddress,
@@ -64,7 +66,7 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
                 (item) => {
                     if (item.product.toString() === alreadyAdded.product.toString() && product.countInStock >= (item.qty + qty)) {
                         item.qty += Number(qty)
-                        if(price)  item.price = price 
+                        if (price) item.price = price
                     }
                 }
             )
@@ -103,6 +105,30 @@ const removeItemInUserCart = asyncHandler(async (req, res) => {
     }
 }
 )
+
+// @desc    Add voucher to user voucher
+// @route   POST /api/users/voucher/add
+// @access  Private
+const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
+    const voucherName = req.body.name
+    console.log(voucherName)
+    const voucher = await Voucher.findOne({ "name": voucherName })
+
+    if (voucher) {
+        const item = {
+            name: voucher.name,
+            discount: voucher.discount,
+            voucherId: voucher._id,
+        }
+        req.user.voucher.push(item)
+        await req.user.save()
+        res.status(201).json({ message: 'Add to voucher Successfully' })
+    } else {
+        res.status(404)
+        throw new Error('Voucher not found')
+    }
+})
+
 
 // @desc    remove item in user cart
 // @route   PUT /api/users/cart/:id/remove
@@ -171,7 +197,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         user.email = req.body.email || user.email
         user.phone = req.body.phone || user.phone
         user.userAddress = req.body.userAddress || user.userAddress
-        
+
 
         const updatedUser = await user.save()
         res.json({
@@ -273,7 +299,7 @@ const getUsers = asyncHandler(async (req, res) => {
 // @route       GET /api/users
 // @access      Private/Admin
 const getUsersByIsDisable = asyncHandler(async (req, res) => {
-    const users = await User.find({"isDisable" : req.body.isDisable}).sort('-createdAt')
+    const users = await User.find({ "isDisable": req.body.isDisable }).sort('-createdAt')
     res.json(users)
 })
 
@@ -381,5 +407,6 @@ export {
     removeItemInUserCart,
     getUserCart,
     removeAllItemInUserCart,
-    checkExistEmail
+    checkExistEmail,
+    addVoucherToUserVoucher
 }

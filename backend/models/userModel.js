@@ -33,6 +33,17 @@ const userSchema = mongoose.Schema(
                 },
             },
         ],
+        voucher: [
+            {
+                name: { type: String, required: true },
+                discount: { type: Number, required: true },
+                voucherId: {
+                    type: mongoose.Schema.Types.ObjectId,
+                    required: true,
+                    ref: 'Voucher',
+                },
+            },
+        ],
         userAddress: {
             address: { type: String, required: true },
             city: { type: String, required: true },
