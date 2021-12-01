@@ -18,7 +18,8 @@ import {
     getUsersByIsDisable, 
     enableUser,
     addVoucherToUserVoucher,
-    removeVoucherInUserVoucher
+    removeVoucherInUserVoucher,
+    getUserVoucher
 } from '../controllers/userController.js'
 import { protect, admin } from '../middleware/authMiddleware.js'
 
@@ -44,6 +45,8 @@ router.route('/cart/:id/add').post(protect, addItemToUserCart)
 router.route('/cart/:id/remove').delete(protect, removeItemInUserCart)
 router.route('/cart/remove').delete(protect, removeAllItemInUserCart)
 router.route('/cart/mycart').get(protect, getUserCart)
+
+router.route('/voucher/myvoucher').get(protect, getUserVoucher)
 
 router.route('/voucher/add').post(protect, addVoucherToUserVoucher)
 router.route('/voucher/:id/remove').delete(protect, removeVoucherInUserVoucher)

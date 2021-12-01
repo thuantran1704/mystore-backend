@@ -187,6 +187,22 @@ const getUserCart = asyncHandler(async (req, res) => {
     }
 })
 
+// @desc        Get user voucher
+// @route       GET /api/users/voucher/myvoucher
+// @access      Private
+const getUserVoucher = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id)
+
+    if (user) {
+        res.json(
+            user.voucher
+        )
+    } else {
+        res.status(404)
+        throw new Error('User not found ')
+    }
+})
+
 // @desc        Get user profile
 // @route       GET /api/users/profile
 // @access      Private
@@ -435,5 +451,6 @@ export {
     removeAllItemInUserCart,
     checkExistEmail,
     addVoucherToUserVoucher,
-    removeVoucherInUserVoucher
+    removeVoucherInUserVoucher,
+    getUserVoucher
 }
