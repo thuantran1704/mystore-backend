@@ -111,7 +111,7 @@ const removeItemInUserCart = asyncHandler(async (req, res) => {
 // @access  Private
 const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
     const voucherName = req.body.name
-    console.log(voucherName)
+
     const voucher = await Voucher.findOne({ "name": voucherName })
 
     if (voucher) {
@@ -146,8 +146,8 @@ const removeVoucherInUserVoucher = asyncHandler(async (req, res) => {
         req.user.voucher = req.user.voucher.filter(
             (item) => item.voucherId.toString() !== alreadyAdded.voucherId.toString()
         )
-        const voucherRemoved = await req.user.save()
-        res.json({ message: 'Voucher removed from list', voucherRemoved: voucherRemoved })
+        const user = await req.user.save()
+        res.json(user.voucher)
     }
     else {
         res.json({ message: "Voucher not found" })
