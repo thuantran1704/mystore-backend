@@ -10,7 +10,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
     const {
         orderItems, shippingAddress,
         paymentMethod, itemsPrice,
-        taxPrice, shippingPrice,
+        taxPrice, shippingPrice, discountPrice,
         totalPrice } = req.body
         var status = 1
     if (orderItems && orderItems.length == 0) {
@@ -29,6 +29,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
             itemsPrice,
             taxPrice,
             shippingPrice,
+            discountPrice,
             totalPrice,
             status
         })
