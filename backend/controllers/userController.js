@@ -126,11 +126,11 @@ const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
                 voucherId: voucher._id,
             }
             req.user.voucher.push(item)
-            await req.user.save()
-            res.status(201).json({ message: 'Add to voucher Successfully' })
+            const user = await req.user.save()
+            res.status(201).json(user.voucher)
         }
         else {
-            res.status(401).json({ message: 'Voucher already Added' })
+            res.status(202).json(req.user.voucher)
 
         }
     }
