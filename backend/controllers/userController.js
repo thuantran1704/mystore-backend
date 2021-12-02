@@ -110,20 +110,31 @@ const removeItemInUserCart = asyncHandler(async (req, res) => {
 // @route   POST /api/users/voucher/add
 // @access  Private
 const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
-    const voucherName = req.body.name
+    const voucherId = req.body.id
 
-    const voucher = await Voucher.findOne({ "name": voucherName })
-
+    const voucher = await Voucher.findById(voucherId)
+    
     if (voucher) {
-        const item = {
-            name: voucher.name,
-            discount: voucher.discount,
-            voucherId: voucher._id,
+        const alreadyAdded = req.user.voucher.find(
+            (item) => item.voucherId.toString() === voucher._id.toString()
+        )
+
+        if (!alreadyAdded) {
+            const item = {
+                name: voucher.name,
+                discount: voucher.discount,
+                voucherId: voucher._id,
+            }
+            req.user.voucher.push(item)
+            await req.user.save()
+            res.status(201).json({ message: 'Add to voucher Successfully' })
         }
-        req.user.voucher.push(item)
-        await req.user.save()
-        res.status(201).json({ message: 'Add to voucher Successfully' })
-    } else {
+        else {
+            res.status(401).json({ message: 'Voucher already Added' })
+
+        }
+    }
+    else {
         res.status(404)
         throw new Error('Voucher not found')
     }
