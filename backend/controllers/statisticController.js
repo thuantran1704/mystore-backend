@@ -53,15 +53,17 @@ const statisticProductSold = asyncHandler(async (req, res) => {
 
 function formatDate(date) {
     var d = new Date(date),
-        month = '' + (d.getMonth()),
+        month = '' + (d.getMonth() + 1),
         day = '' + d.getDate(),
         year = d.getFullYear();
+    // console.log("date:" + day);
+    // console.log("month:" + month);
+    // console.log("year:" + year);
 
     if (month.length < 2)
         month = '0' + month;
     if (day.length < 2)
         day = '0' + day;
-
     return [year, month, day].join('-');
 }
 
@@ -71,17 +73,17 @@ function formatDate(date) {
 const statisticProductBetween = asyncHandler(async (req, res) => {
     const { dateFrom, dateTo } = req.body
     if (dateFrom && dateTo) {
-        var part1 = dateFrom.split('-')
-        var part2 = dateTo.split('-')
-        var from = new Date();
-        from.setFullYear(part1[0], part1[1], part1[2]);
-        var to = new Date();
-        to.setFullYear(part2[0], part2[1], part2[2]);
+    
+        console.log("from : " + new Date(dateFrom.toString()))
+        console.log("to : " + new Date(dateTo.toString() + "T23:59:59"))
+
         var query = {
             $and: [{
                 "createdAt": {
-                    $gte: formatDate(from),
-                    $lte: formatDate(to) + "T23:59:59"
+                    $gte: new Date(dateFrom.toString()),
+                    $lte: new Date(dateTo.toString() + "T23:59:59") 
+                    // $gte: formatDate(dateFrom),
+                    // $lte: formatDate(dateTo) + "T23:59:59"
                 },
                 "isDelivered": true
             }]
@@ -100,7 +102,7 @@ const statisticProductBetween = asyncHandler(async (req, res) => {
                 obj.orderItems = orders[i].orderItems
                 array.push(obj)
             }
-            
+
             for (let j = 0; j < array.length; j++) {
                 for (let k = 0; k < array[j].orderItems.length; k++) {
                     const obj1 = new Obj11
@@ -131,8 +133,8 @@ const statisticProductBetween = asyncHandler(async (req, res) => {
             });
 
             const rs = {
-                result : result,
-                sum : sum
+                result: result,
+                sum: sum
             }
             res.json(rs)
         } else {
@@ -154,21 +156,20 @@ const statisticProductBetween = asyncHandler(async (req, res) => {
 const statisticOrderBetween = asyncHandler(async (req, res) => {
     const dateFrom = req.body.dateFrom
     const dateTo = req.body.dateTo
-
     if (dateFrom && dateTo) {
-        var part1 = dateFrom.split('-')
-        var part2 = dateTo.split('-')
+        // var part1 = dateFrom.split('-')
+        // var part2 = dateTo.split('-')
 
-        var from = new Date();
-        from.setFullYear(part1[0], part1[1], part1[2]);
-        var to = new Date();
-        to.setFullYear(part2[0], part2[1], part2[2]);
+        // var from = new Date();
+        // from.setFullYear(part1[0], part1[1], part1[2]);
+        // var to = new Date();
+        // to.setFullYear(part2[0], part2[1], part2[2]);
 
         var query = {
             $and: [{
                 "createdAt": {
-                    $gte: formatDate(from),
-                    $lte: formatDate(to) + "T23:59:59"
+                    $gte: formatDate(dateFrom),
+                    $lte: formatDate(dateTo) + "T23:59:59"
                 },
                 "isDelivered": true
             }]
