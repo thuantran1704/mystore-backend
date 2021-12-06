@@ -260,6 +260,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             password: user.password,
             phone: updatedUser.phone,
             cart: user.cart,
+            voucher: user.voucher,
             isDisable: user.isDisable,
             role: user.role,
             userAddress: user.userAddress,
