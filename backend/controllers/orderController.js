@@ -12,15 +12,12 @@ const addOrderItems = asyncHandler(async (req, res) => {
         paymentMethod, itemsPrice,
         taxPrice, shippingPrice, discountPrice,
         totalPrice } = req.body
-        var status = 1
+
     if (orderItems && orderItems.length == 0) {
         res.status(400)
         throw new Error('No order item')
     } else {
-        if(paymentMethod ==="ShipCOD"){
-            status = 2
-        }
-      
+
         const order = new Order({
             orderItems,
             user: req.user._id,
@@ -31,7 +28,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
             shippingPrice,
             discountPrice,
             totalPrice,
-            status
         })
         order.orderItems.forEach(async item => {
             await updateStock(item.product, item.qty)
@@ -54,7 +50,7 @@ async function updateStock(id, quantity) {
 // @access      Private
 const getOrderById = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id)
-        .populate('user', 'name email')
+        .populate('user', 'name email phone').populate('orderItems.product', 'name images')
 
     if (order) {
         res.json(order)
@@ -71,15 +67,8 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id)
 
     if (order) {
-        order.isPaid = true
         order.paidAt = Date.now()
-        order.status = 2
-        // order.paymentResult = {
-        //     id: req.body.id,
-        //     status: req.body.status,
-        //     update_time: req.body.update_time,
-        //     email_address: req.body.payer.email_address
-        // }
+        order.status = "Paid"
 
         const updateOrder = await order.save()
         res.json(updateOrder)
@@ -95,8 +84,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 // @access      Private
 const getMyOrders = asyncHandler(async (req, res) => {
     const orders = await Order.find({ user: req.user._id }).sort('-createdAt')
-        .populate('user', 'name email')
-
+        .populate('user', 'name email phone').populate('orderItems.product', 'name images')
     res.json(orders)
 })
 
@@ -108,7 +96,7 @@ const getOrders = asyncHandler(async (req, res) => {
     // const page = Number(req.query.pageNumber) || 1
 
     // const count = await Order.countDocuments()
-    const orders = await Order.find({}).sort('-createdAt').populate('user', 'name email')
+    const orders = await Order.find({}).sort('-createdAt').populate('user', 'name email phone').populate('orderItems.product', 'name images')
     // .limit(pageSize)
     // .skip(pageSize * (page - 1))
     // res.json({ orders, page, pages: Math.ceil(count / pageSize), count})
@@ -119,44 +107,20 @@ const getOrders = asyncHandler(async (req, res) => {
 // @route       GET /api/orders/status
 // @access      Private/Admin
 const getOrdersByStatus = asyncHandler(async (req, res) => {
-    const orders = await Order.find({"status" : req.params.status}).sort('-createdAt').populate('user', 'name email')
+    const orders = await Order.find({ "status": req.params.status }).sort('-createdAt')
+        .populate('user', 'name email phone').populate('orderItems.product', 'name images')
     res.json(orders)
 })
-
-// @desc        Update orderitem to reviewed
-// @route       GET /api/order/:id/review
-// @access      Private/Admin
-// const updateOrderItemToReviewed = asyncHandler(async (req, res) => {
-//     const order = await Order.findById(req.params.id).populate('user', 'name email')
-
-//     if (order) {
-//         const orderItem = Order.findOneAndUpdate({"order.orderItems"})
-//         if (orderItem) {
-//             orderItem.isReviewed = true;
-//             const updateOrder = await orderItem.save()
-//             res.json(updateOrder)
-//         }
-//         else {
-//             res.status(404)
-//             throw new Error('Order not found')
-//         }
-
-//     } else {
-//         res.status(404)
-//         throw new Error('Order not found')
-//     }
-// })
 
 // @desc        Update order to delivered
 // @route       GET /api/order/:id/deliver
 // @access      Private/Admin
 const updateOrderToDelivered = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id)
+    const order = await Order.findById(req.params.id).populate('user', 'name email phone').populate('orderItems.product', 'name images')
 
     if (order) {
-        order.isDelivered = true
         order.deliveredAt = Date.now()
-        order.status = 3
+        order.status = "Delivered"
 
         order.orderItems.forEach(async item => {
             await updateSold(item.product, item.qty)
@@ -181,10 +145,11 @@ async function updateSold(id, quantity) {
 // @route       GET /api/order/:id/deliver
 // @access      Private/Admin
 const updateOrderToReceived = asyncHandler(async (req, res) => {
-    const order = await Order.findById(req.params.id).populate('user', 'name email')
+    const order = await Order.findById(req.params.id)
+        .populate('user', 'name email phone').populate('orderItems.product', 'name images')
 
     if (order) {
-        order.status = 4
+        order.status = "Received"
 
         const updateOrder = await order.save()
         res.json(updateOrder)
@@ -200,15 +165,14 @@ const updateOrderToReceived = asyncHandler(async (req, res) => {
 // @access      Private/User
 const updateOrderToCancelled = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id)
+        .populate('user', 'name email phone').populate('orderItems.product', 'name images')
 
     if (order) {
-        if (order.isDelivered == true) {
+        if (order.status == "Delivered") {
             res.status(404)
-            throw new Error('Order is Delivered ! Can not Cancel ')
+            throw new Error('Order was Delivered ! Could not Cancel ')
         }
-        order.isPaid = false
         order.deliveredAt = Date.now()
-        order.isCancelled = true
         order.status = 0
 
         order.orderItems.forEach(async item => {
@@ -242,5 +206,4 @@ export {
     updateOrderToCancelled,
     updateOrderToReceived,
     getOrdersByStatus
-    // updateOrderItemToReviewed
 }

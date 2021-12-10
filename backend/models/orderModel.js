@@ -9,16 +9,13 @@ const orderSchema = mongoose.Schema(
         },
         orderItems: [
             {
-                name: { type: String, required: true },
                 qty: { type: Number, required: true },
-                image: { type: String, required: true },
                 price: { type: Number, required: true },
                 product: {
                     type: mongoose.Schema.Types.ObjectId,
                     required: true,
                     ref: 'Product',
                 },
-                isReviewed:{type: Boolean, default: false}
             },
         ],
         shippingAddress: {
@@ -31,7 +28,7 @@ const orderSchema = mongoose.Schema(
             type: String,
             required: true,
         },
-       
+
         taxPrice: {
             type: Number,
             required: true,
@@ -51,31 +48,16 @@ const orderSchema = mongoose.Schema(
             required: true,
             default: 0.0,
         },
-        isPaid: {
-            type: Boolean,
-            required: true,
-            default: false,
-        },
         paidAt: {
             type: Date,
-        },
-        isDelivered: {
-            type: Boolean,
-            required: true,
-            default: false,
         },
         deliveredAt: {
             type: Date,
         },
-        status : {
-            type : Number,
-            default: 1,
-        },
-        isCancelled: {
-            type: Boolean,
-            required: true,
-            default: false,
-        },
+        status: {
+            type: String,
+            default: "Wait",
+        }
     },
     {
         timestamps: true,

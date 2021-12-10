@@ -9,8 +9,7 @@ const receiptSchema = mongoose.Schema(
         },
         receiptItems: [
             {
-                name: { type: String, required: true },
-                image: { type: String, required: true },
+               
                 qty: { type: Number, required: true },
                 price: { type: Number, required: true },
                 product: {
@@ -22,10 +21,9 @@ const receiptSchema = mongoose.Schema(
             },
         ],
         supplier: {
-            name: { type: String, required: true },
-            address: { type: String, required: true },
-            country: { type: String, required: true },
-            phone: { type: String, required: true },
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'Suplier',
         },
         shippingPrice: {
             type: Number,

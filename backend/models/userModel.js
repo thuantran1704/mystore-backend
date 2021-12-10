@@ -22,10 +22,8 @@ const userSchema = mongoose.Schema(
         },
         cart: [
             {
-                name: { type: String, required: true },
                 qty: { type: Number, required: true },
-                image: { type: String, required: true },
-                price: { type: Number, required: true },
+                importPrice: { type: Number, required: true },
                 product: {
                     type: mongoose.Schema.Types.ObjectId,
                     required: true,
@@ -35,13 +33,9 @@ const userSchema = mongoose.Schema(
         ],
         voucher: [
             {
-                name: { type: String, required: true },
-                discount: { type: Number, required: true },
-                voucherId: {
-                    type: mongoose.Schema.Types.ObjectId,
-                    required: true,
-                    ref: 'Voucher',
-                },
+                type: mongoose.Schema.Types.ObjectId,
+                required: true,
+                ref: 'Voucher',
             },
         ],
         userAddress: {
@@ -51,15 +45,9 @@ const userSchema = mongoose.Schema(
             country: { type: String, required: true },
         },
         role: {
-            name: {
-                type: String,
-                required: true,
-            },
-            role: {
-                type: mongoose.Schema.Types.ObjectId,
-                required: true,
-                ref: 'Role',
-            }
+            type: mongoose.Schema.Types.ObjectId,
+            required: true,
+            ref: 'Role',
         },
         isDisable: {
             type: Boolean,

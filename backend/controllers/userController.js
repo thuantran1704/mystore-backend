@@ -11,7 +11,7 @@ import Voucher from '../models/voucherModel.js'
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
-    const user = await User.findOne({ email })
+    const user = await User.findOne({ email }).populate('role','name')
     if (user && user.isDisable === true) {
         res.status(401)
         throw new Error('This user is Disable')
@@ -41,7 +41,7 @@ const authUser = asyncHandler(async (req, res) => {
 // @access  Private
 const addItemToUserCart = asyncHandler(async (req, res) => {
     const qty = req.body.qty
-    const price = req.body.price
+    const importPrice = req.body.importPrice
     const product = await Product.findById(req.params.id)
 
     if (product) {
@@ -51,10 +51,8 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
 
         if (!alreadyAdded) {
             const item = {
-                name: product.name,
                 qty: qty,
-                image: product.images[0].url,
-                price: price ? price : product.price,
+                importPrice: importPrice ? importPrice : product.price,
                 product: product._id,
             }
             req.user.cart.push(item)
@@ -66,7 +64,7 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
                 (item) => {
                     if (item.product.toString() === alreadyAdded.product.toString() && product.countInStock >= (item.qty + qty)) {
                         item.qty += Number(qty)
-                        if (price) item.price = price
+                        if (importPrice) item.importPrice = importPrice
                     }
                 }
             )
@@ -116,22 +114,20 @@ const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
     
     if (voucher) {
         const alreadyAdded = req.user.voucher.find(
-            (item) => item.voucherId.toString() === voucher._id.toString()
+            (item) => item._id.toString() === voucher._id.toString()
         )
 
         if (!alreadyAdded) {
-            const item = {
-                name: voucher.name,
-                discount: voucher.discount,
-                voucherId: voucher._id,
-            }
-            req.user.voucher.push(item)
-            const user = await req.user.save()
+            req.user.voucher.push(voucher)
+            await req.user.save()
+            const user = await User.findById(req.user._id).populate('voucher', 'name discount')
+          
             res.status(201).json(user.voucher)
         }
         else {
-            res.status(202).json(req.user.voucher)
-
+           
+            const user = await User.findById(req.user._id).populate('voucher', 'name discount')
+            res.status(202).json(user.voucher)
         }
     }
     else {
@@ -151,13 +147,14 @@ const removeVoucherInUserVoucher = asyncHandler(async (req, res) => {
         throw new Error('Your List Voucher is empty')
     }
     const alreadyAdded = req.user.voucher.find(
-        (item) => item.voucherId._id.toString() === voucherId.toString()
+        (item) => item._id.toString() === voucherId.toString()
     )
     if (alreadyAdded) {
         req.user.voucher = req.user.voucher.filter(
-            (item) => item.voucherId.toString() !== alreadyAdded.voucherId.toString()
+            (item) => item._id.toString() !== alreadyAdded._id.toString()
         )
-        const user = await req.user.save()
+        await req.user.save()
+        const user = await User.findById(req.user._id).populate('voucher', 'name discount')
         res.json(user.voucher)
     }
     else {
@@ -186,7 +183,7 @@ const removeAllItemInUserCart = asyncHandler(async (req, res) => {
 // @route       GET /api/users/cart
 // @access      Private
 const getUserCart = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id).populate('product','name images')
 
     if (user) {
         res.json(
@@ -218,7 +215,7 @@ const getUserVoucher = asyncHandler(async (req, res) => {
 // @route       GET /api/users/profile
 // @access      Private
 const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id).populate('role','name')
 
     if (user) {
         res.json({
@@ -243,7 +240,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @route       PUT /api/users/profile
 // @access      Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id)
+    const user = await User.findById(req.user._id).populate('role','name')
 
     if (user) {
         user.name = req.body.name || user.name
@@ -287,8 +284,6 @@ const RegisterUser = asyncHandler(async (req, res) => {
     }
 
     const findRole = await Role.findById(role)
-    const roleObj = { name: findRole.name, role: role }
-
 
     const user = await User.create({
         name,
@@ -296,7 +291,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
         password,
         phone,
         userAddress,
-        role: roleObj,
+        role: findRole,
     })
 
     if (user) {
@@ -307,6 +302,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
             password: user.password,
             phone: user.phone,
             cart: user.cart,
+            voucher: user.voucher,
             isDisable: user.isDisable,
             role: user.role,
             userAddress: user.userAddress,
@@ -341,11 +337,7 @@ const checkExistEmail = asyncHandler(async (req, res) => {
 // @access      Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
 
-    const users = await User.find({}).sort('-createdAt')
-    // const result = {
-    //     data : users,
-    // }
-    // console.log("was called this api !");
+    const users = await User.find({}).sort('-createdAt').populate('role','name')
     res.json(users)
 })
 
@@ -353,7 +345,7 @@ const getUsers = asyncHandler(async (req, res) => {
 // @route       GET /api/users
 // @access      Private/Admin
 const getUsersByIsDisable = asyncHandler(async (req, res) => {
-    const users = await User.find({ "isDisable": req.body.isDisable }).sort('-createdAt')
+    const users = await User.find({ "isDisable": req.body.isDisable }).sort('-createdAt').populate('role','name')
     res.json(users)
 })
 
@@ -410,7 +402,9 @@ const enableUser = asyncHandler(async (req, res) => {
 // @route       GET /api/users/:id
 // @access      Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id).select('-password')
+    const user = await User.findById(req.params.id).select('-password').populate('role','name')
+    .populate('voucher', 'name discount')
+
     if (user) {
         res.json(user)
     } else {
@@ -427,9 +421,8 @@ const updateUser = asyncHandler(async (req, res) => {
 
     if (user) {
         const findRole = await Role.findById(req.body.role)
-        const roleObj = findRole ? { name: findRole.name, role: findRole._id } : null
 
-        user.role = roleObj || user.role
+        user.role = findRole || user.role
 
         const updatedUser = await user.save()
         res.json({

@@ -10,7 +10,6 @@ import Brand from '../models/brandModel.js'
 const getProducts = asyncHandler(async (req, res) => {
     // const pageSize = 8
     // const page = Number(req.query.pageNumber) || 1
-
     const keyword = req.query.keyword ? {
         name: {
             $regex: req.query.keyword,
@@ -18,7 +17,7 @@ const getProducts = asyncHandler(async (req, res) => {
         }
     } : {}
     // const count = await Product.countDocuments({ ...keyword })
-    const products = await Product.find({ ...keyword }).sort(-'brand').sort('-createdAt')
+    const products = await Product.find({ ...keyword }).sort(-'brand').sort('-createdAt').populate('brand','name').populate('category','name')
 
     res.json(products)
 })
@@ -33,7 +32,7 @@ const getProductsByBrand = asyncHandler(async (req, res) => {
     // const productsSize = await Product.find({ "brand.name": input })
     // const count = productsSize.length
     
-    const products = await Product.find({ "brand.name": input }).sort('-createdAt')
+    const products = await Product.find({ "brand": input }).sort('-createdAt').populate('brand','name').populate('category','name')
     // .limit(pageSize).skip(pageSize * (page - 1))
     // res.json({ products, page, pages: Math.ceil(count / pageSize) })
     res.json(products)
@@ -50,7 +49,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     // const productsSize = await Product.find({ "category.name": input })
     // const count = productsSize.length
 
-    const products = await Product.find({ "category.name": input }).sort('-createdAt')
+    const products = await Product.find({ "category": input }).sort('-createdAt').populate('brand','name').populate('category','name')
     // .limit(pageSize)
     res.json(products)
 
@@ -61,7 +60,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 // @route       GET /api/products/:id
 // @access      Public
 const getProductById = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id)
+    const product = await Product.findById(req.params.id).populate('brand','name').populate('category','name')
     if (product) {
         res.json(product)
     } else {
@@ -79,11 +78,8 @@ const createProduct = asyncHandler(async (req, res) => {
     const findCate = await Category.findById(category)
     const findBrand = await Brand.findById(brand)
 
-    const categoryObj = { name: findCate.name, category: findCate._id }
-    const brandObj = { name: findBrand.name, brand: findBrand._id }
-
     const product = await Product.create({
-        name, price, description, images, category: categoryObj, brand: brandObj, countInStock
+        name, price, description, images, category: findCate, brand: findBrand, countInStock
     })
     res.status(201).json(product)
 })
@@ -107,19 +103,18 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @route       PUT /api/products/:id
 // @access      Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id)
+    const product = await Product.findById(req.params.id).populate('brand','name').populate('category','name')
 
     if (product) {
         const findBrand = await Brand.findById(req.body.brand)
-        const brandObj = findBrand ? { name: findBrand.name, brand: findBrand._id } : null
         const findCate = await Category.findById(req.body.category)
-        const categoryObj = findCate ? { name: findCate.name, category: findCate._id } : null
+       
 
         product.name = req.body.name || product.name
         product.price = req.body.price || product.price
         product.images = req.body.images || product.images
-        product.brand = brandObj || product.brand
-        product.category = categoryObj || product.category
+        product.brand = findBrand || product.brand
+        product.category = findCate || product.category
         product.countInStock = product.countInStock
         product.description = req.body.description || product.description
 
@@ -159,7 +154,6 @@ const createProductReview = asyncHandler(async (req, res) => {
         }
 
         const review = {
-            name: req.user.name,
             rating: Number(rating),
             comment,
             user: req.user._id,
@@ -185,7 +179,7 @@ const createProductReview = asyncHandler(async (req, res) => {
 // @route   GET /api/products/top
 // @access  Public
 const getTopProducts = asyncHandler(async (req, res) => {
-    const products = await Product.find({}).sort({ rating: -1 }).limit(6)
+    const products = await Product.find({}).sort({ rating: -1 }).limit(6).populate('brand','name').populate('category','name')
     res.json(products)
 })
 
@@ -194,7 +188,7 @@ const getTopProducts = asyncHandler(async (req, res) => {
 // @access  Public
 const getTopProductsByBrand = asyncHandler(async (req, res) => {
     const input = req.params.brand
-    const products = await Product.find({ "brand.name": input }).sort({ rating: -1 }).limit(4)
+    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).limit(4).populate('brand','name').populate('category','name')
 
     res.json(products)
 })
@@ -204,7 +198,7 @@ const getTopProductsByBrand = asyncHandler(async (req, res) => {
 // @access  Public
 const getTopProductsByCategory = asyncHandler(async (req, res) => {
     const input = req.params.category
-    const products = await Product.find({ "category.name": input }).sort({ rating: -1 }).sort('-createdAt').limit(4) //{ category: {name: input }}
+    const products = await Product.find({ "category": input }).sort({ rating: -1 }).sort('-createdAt').limit(4).populate('brand','name').populate('category','name')
 
     res.json(products)
 })
@@ -214,7 +208,7 @@ const getTopProductsByCategory = asyncHandler(async (req, res) => {
 // @access  Public
 const getSameProductsByBrand = asyncHandler(async (req, res) => {
     const input = req.params.brand
-    const products = await Product.find({ "brand.name": input }).sort({ rating: -1 }).sort('-createdAt').limit(10)
+    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).sort('-createdAt').limit(8).populate('brand','name').populate('category','name')
 
     res.json(products)
 })
