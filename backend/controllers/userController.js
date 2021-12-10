@@ -11,7 +11,10 @@ import Voucher from '../models/voucherModel.js'
 const authUser = asyncHandler(async (req, res) => {
     const { email, password } = req.body
 
-    const user = await User.findOne({ email }).populate('role','name')
+    const user = await User.findOne({ email })
+        .populate('role', 'name')
+        .populate('voucher', 'name discount')
+        .populate('cart.product', 'name images price')
     if (user && user.isDisable === true) {
         res.status(401)
         throw new Error('This user is Disable')
@@ -111,7 +114,7 @@ const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
     const voucherId = req.body.id
 
     const voucher = await Voucher.findById(voucherId)
-    
+
     if (voucher) {
         const alreadyAdded = req.user.voucher.find(
             (item) => item._id.toString() === voucher._id.toString()
@@ -121,11 +124,11 @@ const addVoucherToUserVoucher = asyncHandler(async (req, res) => {
             req.user.voucher.push(voucher)
             await req.user.save()
             const user = await User.findById(req.user._id).populate('voucher', 'name discount')
-          
+
             res.status(201).json(user.voucher)
         }
         else {
-           
+
             const user = await User.findById(req.user._id).populate('voucher', 'name discount')
             res.status(202).json(user.voucher)
         }
@@ -183,7 +186,7 @@ const removeAllItemInUserCart = asyncHandler(async (req, res) => {
 // @route       GET /api/users/cart
 // @access      Private
 const getUserCart = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).populate('product','name images')
+    const user = await User.findById(req.user._id).populate('product', 'name images')
 
     if (user) {
         res.json(
@@ -215,7 +218,7 @@ const getUserVoucher = asyncHandler(async (req, res) => {
 // @route       GET /api/users/profile
 // @access      Private
 const getUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).populate('role','name')
+    const user = await User.findById(req.user._id).populate('role', 'name')
 
     if (user) {
         res.json({
@@ -240,7 +243,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @route       PUT /api/users/profile
 // @access      Private
 const updateUserProfile = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).populate('role','name')
+    const user = await User.findById(req.user._id).populate('role', 'name')
 
     if (user) {
         user.name = req.body.name || user.name
@@ -337,7 +340,7 @@ const checkExistEmail = asyncHandler(async (req, res) => {
 // @access      Private/Admin
 const getUsers = asyncHandler(async (req, res) => {
 
-    const users = await User.find({}).sort('-createdAt').populate('role','name')
+    const users = await User.find({}).sort('-createdAt').populate('role', 'name')
     res.json(users)
 })
 
@@ -345,7 +348,7 @@ const getUsers = asyncHandler(async (req, res) => {
 // @route       GET /api/users
 // @access      Private/Admin
 const getUsersByIsDisable = asyncHandler(async (req, res) => {
-    const users = await User.find({ "isDisable": req.body.isDisable }).sort('-createdAt').populate('role','name')
+    const users = await User.find({ "isDisable": req.body.isDisable }).sort('-createdAt').populate('role', 'name')
     res.json(users)
 })
 
@@ -402,8 +405,8 @@ const enableUser = asyncHandler(async (req, res) => {
 // @route       GET /api/users/:id
 // @access      Private/Admin
 const getUserById = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.params.id).select('-password').populate('role','name')
-    .populate('voucher', 'name discount')
+    const user = await User.findById(req.params.id).select('-password').populate('role', 'name')
+        .populate('voucher', 'name discount')
 
     if (user) {
         res.json(user)
