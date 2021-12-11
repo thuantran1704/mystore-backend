@@ -35,16 +35,11 @@ class Obj2 {
 // @route       GET /api/statistic
 // @access      Private/Admin
 const statisticProductSold = asyncHandler(async (req, res) => {
-    const products = await Product.find({ sold: { $gte: 1 } }).sort("-sold").limit(10)
-    var array = []
+    const products = await Product.find({ sold: { $gte: 1 } }).sort("-sold")
+        .populate('brand', 'name').populate('category', 'name')
+        .populate('reviews.user', 'name')
     if (products) {
-        for (let i = 0; i < products.length; i++) {
-            const obj = new Obj
-            obj.name = products[i].name
-            obj.sold = products[i].sold
-            array.push(obj)
-        }
-        res.json(array)
+        res.json(products)
     } else {
         res.status(404)
         throw new Error('Statistic error')
@@ -70,10 +65,10 @@ function formatDate(date) {
 // @desc        Statistic order between date
 // @route       GET /api/statistic/between
 // @access      Private/Admin
-const statisticProductBetween = asyncHandler(async (req, res) => {
+const statisticOrderBetween = asyncHandler(async (req, res) => {
     const { dateFrom, dateTo } = req.body
     if (dateFrom && dateTo) {
-    
+
         console.log("from : " + new Date(dateFrom.toString()))
         console.log("to : " + new Date(dateTo.toString() + "T23:59:59"))
 
@@ -81,89 +76,30 @@ const statisticProductBetween = asyncHandler(async (req, res) => {
             $and: [{
                 "createdAt": {
                     $gte: new Date(dateFrom.toString()),
-                    $lte: new Date(dateTo.toString() + "T23:59:59") 
-                    // $gte: formatDate(dateFrom),
-                    // $lte: formatDate(dateTo) + "T23:59:59"
+                    $lte: new Date(dateTo.toString() + "T23:59:59")
                 },
-                "isDelivered": true
+                "status": "Received"
             }]
         };
-        const orders = await Order.find(query)
-        var sum = 0
-        var arrId = []
-        var array = []
-        var array2 = []
-        var result = []
-        var temp = 0
-        if (orders) {
-            for (let i = 0; i < orders.length; i++) {
-                sum += orders[i].totalPrice
-                const obj = new Obj1
-                obj.orderItems = orders[i].orderItems
-                array.push(obj)
-            }
-
-            for (let j = 0; j < array.length; j++) {
-                for (let k = 0; k < array[j].orderItems.length; k++) {
-                    const obj1 = new Obj11
-                    obj1.id = array[j].orderItems[k].product;
-                    obj1.name = array[j].orderItems[k].name;
-                    obj1.qty = array[j].orderItems[k].qty;
-                    array2.push(obj1)
-                }
-            }
-
-            for (let a = 0; a < array2.length; a++) {
-                temp = arrId.findIndex(ab => ab === array2[a].id.toString())
-
-                if (temp === -1) {
-                    const obj = new Obj
-                    obj.name = array2[a].name
-                    obj.sold = Number(array2[a].qty)
-                    result.push(obj)
-                    arrId.push(array2[a].id.toString())
-                }
-                else {
-                    result[temp].sold += Number(array2[a].qty)
-                }
-            }
-
-            result.sort(function (a, b) {
-                return b.sold - a.sold;
-            });
-
-            const rs = {
-                result: result,
-                sum: sum
-            }
-            res.json(rs)
-        } else {
-            res.status(404)
-            throw new Error('Statistic error')
-        }
+        const orders = await Order.find(query).populate("orderItems.product", "name")
+        res.json(orders)
     }
     else {
         res.status(404)
-        throw new Error('Statistic error here')
+        throw new Error('Statistic error')
     }
 })
 
 
 
-// @desc        Statistic product between date
-// @route       GET /api/statistic/between
+// @desc        Statistic product sold between date
+// @route       GET /api/statistic/productbetween
 // @access      Private/Admin
-const statisticOrderBetween = asyncHandler(async (req, res) => {
+const statisticProductBetween = asyncHandler(async (req, res) => {
     const dateFrom = req.body.dateFrom
     const dateTo = req.body.dateTo
-    if (dateFrom && dateTo) {
-        // var part1 = dateFrom.split('-')
-        // var part2 = dateTo.split('-')
 
-        // var from = new Date();
-        // from.setFullYear(part1[0], part1[1], part1[2]);
-        // var to = new Date();
-        // to.setFullYear(part2[0], part2[1], part2[2]);
+    if (dateFrom && dateTo) {
 
         var query = {
             $and: [{
@@ -171,7 +107,7 @@ const statisticOrderBetween = asyncHandler(async (req, res) => {
                     $gte: formatDate(dateFrom),
                     $lte: formatDate(dateTo) + "T23:59:59"
                 },
-                "isDelivered": true
+                "status": "received"
             }]
         };
 
@@ -197,7 +133,6 @@ const statisticOrderBetween = asyncHandler(async (req, res) => {
         res.status(404)
         throw new Error('Statistic error here')
     }
-
 })
 
 
