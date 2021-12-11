@@ -10,7 +10,6 @@ const addReceiptItems = asyncHandler(async (req, res) => {
     const {
         receiptItems,
         supplier,
-        itemsPrice,
         shippingPrice,
         totalPrice
     } = req.body
@@ -23,11 +22,9 @@ const addReceiptItems = asyncHandler(async (req, res) => {
             receiptItems,
             user: req.user._id,
             supplier,
-            itemsPrice,
             shippingPrice,
             totalPrice,
             orderAt: Date.now(),
-            receiveAt: Date.now(),
         })
 
         const createdreceipt = await receipt.save()
@@ -39,7 +36,9 @@ const addReceiptItems = asyncHandler(async (req, res) => {
 // @route       GET /api/receipts/status/:status
 // @access      Private/Admin
 const getReceiptsByStatus = asyncHandler(async (req, res) => {
-    const receipts = await Receipt.find({"status" : req.params.status}).sort('-createdAt').populate('user', 'name email')
+    const receipts = await Receipt.find({ "status": req.params.status }).sort('-createdAt').populate('user', 'name email')
+    .populate('receiptItems.product', 'name images')
+    .populate('supplier', 'name address country phone')
     res.json(receipts)
 })
 
@@ -48,7 +47,8 @@ const getReceiptsByStatus = asyncHandler(async (req, res) => {
 // @access      Private/Admin
 const getReceiptById = asyncHandler(async (req, res) => {
     const receipt = await Receipt.findById(req.params.id).populate('user', 'name email')
-
+    .populate('receiptItems.product', 'name images')
+    .populate('supplier', 'name address country phone')
     if (receipt) {
         res.json(receipt)
     } else {
@@ -66,6 +66,8 @@ const getReceipts = asyncHandler(async (req, res) => {
 
     // const count = await Receipt.countDocuments()
     const receipts = await Receipt.find({}).sort('-createdAt').populate('user', 'name email')
+    .populate('receiptItems.product', 'name images')
+    .populate('supplier', 'name address country phone')
     // .limit(pageSize)
     // .skip(pageSize * (page - 1))
     res.json(receipts)
