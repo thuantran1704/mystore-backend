@@ -18,6 +18,7 @@ const getProducts = asyncHandler(async (req, res) => {
     } : {}
     // const count = await Product.countDocuments({ ...keyword })
     const products = await Product.find({ ...keyword }).sort(-'brand').sort('-createdAt').populate('brand','name').populate('category','name')
+    .populate('reviews.user','name')
 
     res.json(products)
 })
