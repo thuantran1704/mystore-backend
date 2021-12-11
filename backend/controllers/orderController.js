@@ -11,7 +11,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
         orderItems, shippingAddress,
         paymentMethod, itemsPrice,
         taxPrice, shippingPrice, discountPrice,
-        totalPrice } = req.body
+        totalPrice,status } = req.body
 
     if (orderItems && orderItems.length == 0) {
         res.status(400)
@@ -28,6 +28,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
             shippingPrice,
             discountPrice,
             totalPrice,
+            status
         })
         order.orderItems.forEach(async item => {
             await updateStock(item.product, item.qty)
@@ -68,7 +69,7 @@ const updateOrderToPaid = asyncHandler(async (req, res) => {
 
     if (order) {
         order.paidAt = Date.now()
-        order.status = "Paid"
+        order.status = "Wait"
 
         const updateOrder = await order.save()
         res.json(updateOrder)
