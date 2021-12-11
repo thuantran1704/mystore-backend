@@ -33,7 +33,7 @@ const getProductsByBrand = asyncHandler(async (req, res) => {
     // const productsSize = await Product.find({ "brand.name": input })
     // const count = productsSize.length
     
-    const products = await Product.find({ "brand": input }).sort('-createdAt').populate('brand','name').populate('category','name')
+    const products = await Product.find({ "brand": input }).sort('-createdAt').populate('brand','name').populate('category','name').populate('reviews.user','name')
     // .limit(pageSize).skip(pageSize * (page - 1))
     // res.json({ products, page, pages: Math.ceil(count / pageSize) })
     res.json(products)
@@ -50,7 +50,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
     // const productsSize = await Product.find({ "category.name": input })
     // const count = productsSize.length
 
-    const products = await Product.find({ "category": input }).sort('-createdAt').populate('brand','name').populate('category','name')
+    const products = await Product.find({ "category": input }).sort('-createdAt').populate('brand','name').populate('category','name').populate('reviews.user','name')
     // .limit(pageSize)
     res.json(products)
 
@@ -61,7 +61,7 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
 // @route       GET /api/products/:id
 // @access      Public
 const getProductById = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id).populate('brand','name').populate('category','name')
+    const product = await Product.findById(req.params.id).populate('brand','name').populate('category','name').populate('reviews.user','name')
     if (product) {
         res.json(product)
     } else {
@@ -104,7 +104,7 @@ const deleteProduct = asyncHandler(async (req, res) => {
 // @route       PUT /api/products/:id
 // @access      Private/Admin
 const updateProduct = asyncHandler(async (req, res) => {
-    const product = await Product.findById(req.params.id).populate('brand','name').populate('category','name')
+    const product = await Product.findById(req.params.id).populate('brand','name').populate('category','name').populate('reviews.user','name')
 
     if (product) {
         const findBrand = await Brand.findById(req.body.brand)
@@ -189,7 +189,7 @@ const getTopProducts = asyncHandler(async (req, res) => {
 // @access  Public
 const getTopProductsByBrand = asyncHandler(async (req, res) => {
     const input = req.params.brand
-    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).limit(4).populate('brand','name').populate('category','name')
+    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).limit(4).populate('brand','name').populate('category','name').populate('reviews.user','name')
 
     res.json(products)
 })
@@ -199,7 +199,7 @@ const getTopProductsByBrand = asyncHandler(async (req, res) => {
 // @access  Public
 const getTopProductsByCategory = asyncHandler(async (req, res) => {
     const input = req.params.category
-    const products = await Product.find({ "category": input }).sort({ rating: -1 }).sort('-createdAt').limit(4).populate('brand','name').populate('category','name')
+    const products = await Product.find({ "category": input }).sort({ rating: -1 }).sort('-createdAt').limit(4).populate('brand','name').populate('category','name').populate('reviews.user','name')
 
     res.json(products)
 })
@@ -209,7 +209,7 @@ const getTopProductsByCategory = asyncHandler(async (req, res) => {
 // @access  Public
 const getSameProductsByBrand = asyncHandler(async (req, res) => {
     const input = req.params.brand
-    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).sort('-createdAt').limit(8).populate('brand','name').populate('category','name')
+    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).sort('-createdAt').limit(8).populate('brand','name').populate('category','name').populate('reviews.user','name')
 
     res.json(products)
 })
