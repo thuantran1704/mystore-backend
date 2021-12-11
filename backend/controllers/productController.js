@@ -209,7 +209,8 @@ const getTopProductsByCategory = asyncHandler(async (req, res) => {
 // @access  Public
 const getSameProductsByBrand = asyncHandler(async (req, res) => {
     const input = req.params.brand
-    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).sort('-createdAt').limit(8).populate('brand','name').populate('category','name').populate('reviews.user','name')
+    const products = await Product.find({ "brand": input }).sort({ rating: -1 }).sort('-createdAt').limit(8).populate('brand','name').populate('category','name')
+    .populate('reviews.user','name')
 
     res.json(products)
 })

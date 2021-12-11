@@ -173,7 +173,7 @@ const updateOrderToCancelled = asyncHandler(async (req, res) => {
             throw new Error('Order was Delivered ! Could not Cancel ')
         }
         order.deliveredAt = Date.now()
-        order.status = 0
+        order.status = "Cancelled"
 
         order.orderItems.forEach(async item => {
             await returnStock(item.product, item.qty)
