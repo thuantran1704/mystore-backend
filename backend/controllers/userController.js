@@ -186,7 +186,7 @@ const removeAllItemInUserCart = asyncHandler(async (req, res) => {
 // @route       GET /api/users/cart
 // @access      Private
 const getUserCart = asyncHandler(async (req, res) => {
-    const user = await User.findById(req.user._id).populate('product', 'name images')
+    const user = await User.findById(req.user._id).populate('product', 'name price images')
 
     if (user) {
         res.json(
