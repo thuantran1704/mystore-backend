@@ -78,6 +78,7 @@ const statisticOrderBetween = asyncHandler(async (req, res) => {
             }]
         };
         const orders = await Order.find(query).populate("orderItems.product", "name images")
+            .populate("user", "name email phone")
         res.json(orders)
     }
     else {
