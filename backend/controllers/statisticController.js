@@ -68,10 +68,6 @@ function formatDate(date) {
 const statisticOrderBetween = asyncHandler(async (req, res) => {
     const { dateFrom, dateTo } = req.body
     if (dateFrom && dateTo) {
-
-        console.log("from : " + new Date(dateFrom.toString()))
-        console.log("to : " + new Date(dateTo.toString() + "T23:59:59"))
-
         var query = {
             $and: [{
                 "createdAt": {
@@ -81,7 +77,7 @@ const statisticOrderBetween = asyncHandler(async (req, res) => {
                 "status": "Received"
             }]
         };
-        const orders = await Order.find(query).populate("orderItems.product", "name")
+        const orders = await Order.find(query).populate("orderItems.product", "name images")
         res.json(orders)
     }
     else {
