@@ -327,6 +327,7 @@ const RegisterUser = asyncHandler(async (req, res) => {
             phone: user.phone,
             cart: user.cart,
             voucher: user.voucher,
+            coin: user.coin,
             isDisable: user.isDisable,
             role: user.role,
             userAddress: user.userAddress,
