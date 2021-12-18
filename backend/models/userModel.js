@@ -40,7 +40,7 @@ const userSchema = mongoose.Schema(
         ],
         coin: {
             type: Number,
-            default: 0,            
+            default: 0.0,            
         },
         userAddress: {
             address: { type: String, required: true },

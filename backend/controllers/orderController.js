@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import Order from '../models/orderModel.js'
 import Product from '../models/productModel.js'
+import User from '../models/userModel.js'
 
 
 // @desc        Create new order
@@ -11,7 +12,7 @@ const addOrderItems = asyncHandler(async (req, res) => {
         orderItems, shippingAddress,
         paymentMethod, itemsPrice,
         taxPrice, shippingPrice, discountPrice,
-        totalPrice,status } = req.body
+        totalPrice, status } = req.body
 
     if (orderItems && orderItems.length == 0) {
         res.status(400)
@@ -143,7 +144,7 @@ async function updateSold(id, quantity) {
 }
 
 // @desc        Update order to received
-// @route       GET /api/order/:id/deliver
+// @route       GET /api/order/:id/return
 // @access      Private/Admin
 const updateOrderToReceived = asyncHandler(async (req, res) => {
     const order = await Order.findById(req.params.id)
@@ -151,6 +152,64 @@ const updateOrderToReceived = asyncHandler(async (req, res) => {
 
     if (order) {
         order.status = "Received"
+
+        const updateOrder = await order.save()
+        res.json(updateOrder)
+
+    } else {
+        res.status(404)
+        throw new Error('Order not found')
+    }
+})
+
+// @desc        Update order to refund by Admin
+// @route       GET /api/order/:id/returned
+// @access      Private
+const updateOrderToReturned = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+
+    if (order) {
+        if (order.status == "Return") {
+            order.status = "Returned"
+             await order.save()
+
+            const user = await User.findById(order.user)
+            var coin = 0
+            if (user) {
+                order.orderItems.forEach(async item => {
+                    coin += (item.price * item.qty)
+                })
+                user.coin += coin
+                const updatedUser = await user.save()
+                res.json({
+                    coin: updatedUser.coin,
+                })
+            }
+            else {
+                res.status(404)
+                throw new Error('User not found ')
+            }
+
+        } else {
+            res.status(401)
+            throw new Error('The order does not ask for a return ')
+        }
+
+
+    } else {
+        res.status(404)
+        throw new Error('Order not found')
+    }
+})
+
+// @desc        Update order to refund by user
+// @route       GET /api/order/:id/return
+// @access      Private
+const updateOrderToReturn = asyncHandler(async (req, res) => {
+    const order = await Order.findById(req.params.id)
+
+    if (order) {
+        order.status = "Return"
 
         const updateOrder = await order.save()
         res.json(updateOrder)
@@ -206,5 +265,7 @@ export {
     getOrders,
     updateOrderToCancelled,
     updateOrderToReceived,
-    getOrdersByStatus
+    getOrdersByStatus,
+    updateOrderToReturned,
+    updateOrderToReturn
 }
