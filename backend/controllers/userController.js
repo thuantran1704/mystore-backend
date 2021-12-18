@@ -252,14 +252,14 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         user.email = req.body.email || user.email
         user.phone = req.body.phone || user.phone
         user.userAddress = req.body.userAddress || user.userAddress
-
-
+        user.password = req.body.password || user.password
+    
         const updatedUser = await user.save()
         res.json({
             _id: updatedUser._id,
             name: updatedUser.name,
             email: updatedUser.email,
-            password: user.password,
+            password: updatedUser.password,
             phone: updatedUser.phone,
             cart: user.cart,
             voucher: user.voucher,
