@@ -28,6 +28,7 @@ const authUser = asyncHandler(async (req, res) => {
             phone: user.phone,
             cart: user.cart,
             voucher: user.voucher,
+            coin: user.coin,
             isDisable: user.isDisable,
             role: user.role,
             userAddress: user.userAddress,
@@ -228,6 +229,7 @@ const getUserProfile = asyncHandler(async (req, res) => {
             password: user.password,
             phone: user.phone,
             cart: user.cart,
+            coin: user.coin,
             isDisable: user.isDisable,
             role: user.role,
             userAddress: user.userAddress,
@@ -265,6 +267,25 @@ const updateUserProfile = asyncHandler(async (req, res) => {
             role: user.role,
             userAddress: user.userAddress,
             token: generateToken(updatedUser._id),
+        })
+    }
+    else {
+        res.status(404)
+        throw new Error('User not found ')
+    }
+})
+
+// @desc        Update user coin
+// @route       PUT /api/users/coin
+// @access      Private
+const updateUserCoin = asyncHandler(async (req, res) => {
+    const user = await User.findById(req.user._id)
+    const coin = req.body.coin
+    if (user) {
+        user.coin = coin
+        const updatedUser = await user.save()
+        res.json({
+            coin: updatedUser.coin,
         })
     }
     else {
@@ -460,5 +481,6 @@ export {
     checkExistEmail,
     addVoucherToUserVoucher,
     removeVoucherInUserVoucher,
-    getUserVoucher
+    getUserVoucher,
+    updateUserCoin,
 }

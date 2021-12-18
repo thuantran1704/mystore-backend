@@ -38,6 +38,10 @@ const userSchema = mongoose.Schema(
                 ref: 'Voucher',
             },
         ],
+        coin: {
+            type: Number,
+            default: 0,            
+        },
         userAddress: {
             address: { type: String, required: true },
             city: { type: String, required: true },
