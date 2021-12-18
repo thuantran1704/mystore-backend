@@ -171,10 +171,12 @@ const updateOrderToReturned = asyncHandler(async (req, res) => {
     if (order) {
         if (order.status == "Return") {
             order.status = "Returned"
-             await order.save()
-
+            await order.save()
+            order.orderItems.forEach(async item => {
+                await returnStock(item.product, item.qty)
+            })
             const user = await User.findById(order.user)
-      
+
             if (user) {
                 user.coin += order.totalPrice
                 const updatedUser = await user.save()
