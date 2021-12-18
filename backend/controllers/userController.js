@@ -282,7 +282,7 @@ const updateUserCoin = asyncHandler(async (req, res) => {
     const user = await User.findById(req.user._id)
     const coin = req.body.coin
     if (user) {
-        user.coin = coin
+        user.coin -= coin
         const updatedUser = await user.save()
         res.json({
             coin: updatedUser.coin,

@@ -52,7 +52,7 @@ router.route('/voucher/myvoucher').get(protect, getUserVoucher)
 router.route('/voucher/add').post(protect, addVoucherToUserVoucher)
 router.route('/voucher/:id/remove').delete(protect, removeVoucherInUserVoucher)
 
-router.route('/coin/:id').put(protect, updateUserCoin)
+router.route('/coin').put(protect, updateUserCoin)
 
 
 export default router
