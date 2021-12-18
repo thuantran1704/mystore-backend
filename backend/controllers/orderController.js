@@ -174,12 +174,9 @@ const updateOrderToReturned = asyncHandler(async (req, res) => {
              await order.save()
 
             const user = await User.findById(order.user)
-            var coin = 0
+      
             if (user) {
-                order.orderItems.forEach(async item => {
-                    coin += (item.price * item.qty)
-                })
-                user.coin += coin
+                user.coin += order.totalPrice
                 const updatedUser = await user.save()
                 res.json({
                     coin: updatedUser.coin,
