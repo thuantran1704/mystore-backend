@@ -9,15 +9,20 @@ import Receipt from '../models/receiptModel.js'
 // @route       GET /api/dashboard
 // @access      Private/Admin
 const getInfoDashboard = asyncHandler(async (req, res) => {
+
     const productCount = await Product.countDocuments()
     const userCount = await User.countDocuments()
     const orderCount = await Order.countDocuments()
     const receiptCount = await Receipt.countDocuments()
+    const returnOrder = await Order.countDocuments({ "status": "Return"})
+    const waitOrder = await Order.countDocuments({ "status": "Wait"})
+      
     const list = []
     list.push(productCount)
     list.push(userCount)
     list.push(orderCount)
     list.push(receiptCount)
+    list.push(returnOrder + waitOrder)
     res.json(list)
 })
 
