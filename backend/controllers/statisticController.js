@@ -1,6 +1,7 @@
 import asyncHandler from 'express-async-handler'
 import Order from '../models/orderModel.js'
 import Product from '../models/productModel.js'
+import Receipt from '../models/receiptModel.js';
 
 
 class Obj {
@@ -89,52 +90,37 @@ const statisticOrderBetween = asyncHandler(async (req, res) => {
 
 
 
-// @desc        Statistic product sold between date
-// @route       GET /api/statistic/productbetween
+// @desc        Statistic profit between date
+// @route       POST /api/statistic/profitbetween
 // @access      Private/Admin
-const statisticProductBetween = asyncHandler(async (req, res) => {
-    const dateFrom = req.body.dateFrom
-    const dateTo = req.body.dateTo
-
+const statisticProfitBetween = asyncHandler(async (req, res) => {
+    const { dateFrom, dateTo } = req.body
     if (dateFrom && dateTo) {
-
         var query = {
             $and: [{
                 "createdAt": {
-                    $gte: formatDate(dateFrom),
-                    $lte: formatDate(dateTo) + "T23:59:59"
+                    $gte: new Date(dateFrom.toString()),
+                    $lte: new Date(dateTo.toString() + "T23:59:59")
                 },
-                "status": "received"
+                "status": "Received"
             }]
         };
-
         const orders = await Order.find(query)
+            .populate("user", "name email phone").select({ orderItems: 1, _id: 0, user: 0 })
+        const receipts = await Receipt.find({ "status": "Received" }).sort('-createdAt').populate('user', 'name email')
 
-        var array = []
-        if (orders) {
-            for (let i = 0; i < orders.length; i++) {
-                const obj = new Obj2
-                obj.id = orders[i]._id
-                obj.totalPrice = orders[i].totalPrice
-                obj.orderItems = orders[i].orderItems
-                obj.createdAt = orders[i].createdAt
-                array.push(obj)
-            }
-            res.json(array)
-        } else {
-            res.status(404)
-            throw new Error('Statistic error')
-        }
+            .select({ receiptItems: 1, _id: 0, user: 0 })
+        res.json({ orders, receipts })
     }
     else {
         res.status(404)
-        throw new Error('Statistic error here')
+        throw new Error('Statistic error')
     }
 })
 
 
 export {
-    statisticProductBetween,
+    statisticProfitBetween,
     statisticProductSold,
     statisticOrderBetween
 }

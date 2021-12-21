@@ -66,9 +66,15 @@ const addItemToUserCart = asyncHandler(async (req, res) => {
         else {
             req.user.cart.map(
                 (item) => {
-                    if (item.product.toString() === alreadyAdded.product.toString() && product.countInStock >= (item.qty + qty)) {
-                        item.qty += Number(qty)
-                        if (importPrice) item.importPrice = importPrice
+                    if (importPrice) {
+                        if (item.product._id.toString() === alreadyAdded.product._id.toString()) {
+                            item.qty += Number(qty)
+                            item.importPrice = importPrice
+                        }
+                    } else {
+                        if (item.product._id.toString() === alreadyAdded.product._id.toString() && product.countInStock >= (item.qty + qty)) {
+                            item.qty += Number(qty)
+                        }
                     }
                 }
             )
@@ -253,7 +259,7 @@ const updateUserProfile = asyncHandler(async (req, res) => {
         user.phone = req.body.phone || user.phone
         user.userAddress = req.body.userAddress || user.userAddress
         user.password = req.body.password || user.password
-    
+
         const updatedUser = await user.save()
         res.json({
             _id: updatedUser._id,
